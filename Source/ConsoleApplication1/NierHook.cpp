@@ -1,21 +1,15 @@
 #include <Windows.h>
 #include <TlHelp32.h>
-#include <tchar.h>
-#include <vector>
-#include <iostream>
 #include "NierHook.hpp"
-#include <thread>
 
 //Hook to NieR:Automata process
 void NieRHook::_hook(void)
 {
 	DWORD ID = this->_pID;
 	uintptr_t entityAddress = 0;
-	std::cout << "Hooking..." << std::endl;
 	while (ID <= 0) {
 		ID = this->_getProcessID();
 	}
-	std::cout << "Hooked." << std::endl;
 	this->_pID = ID;
 	this->_baseAddress = this->_getModuleBaseAddress(ID, L"NieRAutomata.exe");
 	this->_hooked = true;
@@ -24,9 +18,23 @@ void NieRHook::_hook(void)
 void NieRHook::_unHook(void)
 {
 	this->_hooked = false;
-	this->_pID = 0;
 	this->_baseAddress = 0;
 	this->_entityAddress = 0;
+	this->_pID = 0;
+	this->Health = 0;
+	this->MaxHealth = 0;
+	this->Xpos = 0.000000;
+	this->Ypos = 0.000000;
+	this->Zpos = 0.000000;
+	this->EXP = 0;
+	this->Funds = 0;
+	this->Level = 0;
+	this->InfiniteAirDash(false);
+	this->InfiniteDoubleJump(false);
+	this->IgnoreUpgradeMaterials(false);
+	this->NoCLip(false);
+	this->NoCooldown(false);
+	this->setGameSpeed(1);
 }
 
 //Search for window named "NieR:Automata" returns: process ID
@@ -74,41 +82,244 @@ uintptr_t NieRHook::_getModuleBaseAddress(DWORD procId, const wchar_t* modName)
 	return modBaseAddr;
 }
 
-void NieRHook::_fetchData(void)
+void NieRHook::_updatePosition(void)
 {
 	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
 	float Xpos;
 	float Ypos;
 	float Zpos;
-	int health;
-	int maxHealth;
 	uintptr_t XAddress = static_cast<uintptr_t>((DWORD)this->_entityAddress) + 0x50;
 	uintptr_t YAddress = static_cast<uintptr_t>((DWORD)this->_entityAddress) + 0x54;
 	uintptr_t ZAddress = static_cast<uintptr_t>((DWORD)this->_entityAddress) + 0x58;
-	uintptr_t HealthAddress = static_cast<uintptr_t>((DWORD)this->_entityAddress) + 0x858;
-	uintptr_t MaxHealthAddress = static_cast<uintptr_t>((DWORD)this->_entityAddress) + 0x858;
-	std::cout << "Fetching" << std::endl;
-	while (this->_hooked)
-	{
-		ReadProcessMemory(pHandle, (LPCVOID)XAddress, &Xpos, sizeof(Xpos), NULL);
-		ReadProcessMemory(pHandle, (LPCVOID)YAddress, &Ypos, sizeof(Ypos), NULL);
-		ReadProcessMemory(pHandle, (LPCVOID)ZAddress, &Zpos, sizeof(Zpos), NULL);
-		ReadProcessMemory(pHandle, (LPCVOID)HealthAddress, &health, sizeof(health), NULL);
-		ReadProcessMemory(pHandle, (LPCVOID)MaxHealthAddress, &maxHealth, sizeof(maxHealth), NULL);
-		this->player.setPosition(Xpos, Ypos, Zpos);
-		Sleep(1000);
-	}
-	std::cout << "END Fetching" << std::endl;
+	ReadProcessMemory(pHandle, (LPCVOID)XAddress, &Xpos, sizeof(Xpos), NULL);
+	ReadProcessMemory(pHandle, (LPCVOID)YAddress, &Ypos, sizeof(Ypos), NULL);
+	ReadProcessMemory(pHandle, (LPCVOID)ZAddress, &Zpos, sizeof(Zpos), NULL);
+	this->Xpos = Xpos;
+	this->Ypos = Ypos;
+	this->Zpos = Zpos;
 }
 
-void NieRHook::_hookStatus(void)
+void NieRHook::_updateHealth(void)
 {
-	DWORD pID = this->_pID;
-	while (this->_hooked) {
-		if (pID != this->_getProcessID()) {
-			this->_unHook();
-		}
+	int h = 0;
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	ReadProcessMemory(pHandle, (LPCVOID)(this->_entityAddress + 0x858), &h, sizeof(h), NULL);
+	this->Health = h;
+	ReadProcessMemory(pHandle, (LPCVOID)(this->_entityAddress + 0x85c), &h, sizeof(h), NULL);
+	CloseHandle(pHandle); //Close handle to prevent memory leaks
+	this->MaxHealth = h;
+}
+
+void NieRHook::_updateEntity(void)
+{
+	//Get entity address from pointer at offset 0x16053B8
+	uintptr_t entityAdd = 0;
+	uintptr_t entityAddPointer = this->_baseAddress + 0x16053B8;
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	ReadProcessMemory(pHandle, (LPCVOID)entityAddPointer, &entityAdd, sizeof(entityAdd), NULL);
+	CloseHandle(pHandle); //Close handle to prevent memory leaks
+	this->_entityAddress = entityAdd;
+}
+
+void NieRHook::_updateLevel(void)
+{
+	int lvl = 0;
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	ReadProcessMemory(pHandle, (LPCVOID)(this->_entityAddress + 0x14BC), &lvl, sizeof(lvl), NULL);
+	CloseHandle(pHandle); //Close handle to prevent memory leaks
+	this->Level = lvl;
+}
+
+void NieRHook::_updateFunds(void)
+{
+	int funds = 0;
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	ReadProcessMemory(pHandle, (LPCVOID)(this->_baseAddress + 0x197C4C0), &funds, sizeof(funds), NULL);
+	CloseHandle(pHandle); //Close handle to prevent memory leaks
+	this->Funds = funds;
+}
+
+void NieRHook::_updateEXP(void)
+{
+	int exp = 0;
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	ReadProcessMemory(pHandle, (LPCVOID)(this->_baseAddress + 0x1984670), &exp, sizeof(exp), NULL);
+	CloseHandle(pHandle); //Close handle to prevent memory leaks
+	this->EXP = exp;
+}
+bool NieRHook::_isCurrentPos(float X, float Y, float Z)
+{
+	int cX = (int)this->getXPosition();
+	int cY = (int)this->getYPosition();
+	int cZ = (int)this->getZPosition();
+	if ((cX != (int)X) || (cY != (int)Y) || (cZ != (int)Z)) {
+		return false;
 	}
+	return true;
+}
+//Fill memory with no Operations
+void NieRHook::Nop(BYTE* destination, unsigned int size, HANDLE hProcess)
+{
+	BYTE* nopArray = new BYTE[size];
+	memset(nopArray, 0x90, size);
+	Patch(destination, nopArray, size, hProcess);
+	delete[] nopArray;
+}
+//Fill memory with custom values
+void NieRHook::Patch(BYTE* destination, BYTE* src, unsigned int size, HANDLE hProcess)
+{
+	DWORD oldprotection;
+	VirtualProtectEx(hProcess, destination, size, PAGE_EXECUTE_READWRITE, &oldprotection);
+	WriteProcessMemory(hProcess, destination, src, size, nullptr);
+	VirtualProtectEx(hProcess, destination, size, oldprotection, &oldprotection);
+}
+
+void NieRHook::hookStatus(void)
+{
+	if (this->_pID != this->_getProcessID()) {
+		this->_unHook();
+	}
+}
+//Update Player Attributes
+void NieRHook::update(void)
+{
+	_updateEntity();
+	_updateHealth();
+	_updatePosition();
+	_updateLevel();
+	_updateFunds();
+	_updateEXP();
+}
+
+float NieRHook::getXPosition(void)
+{
+	return this->Xpos;
+}
+
+float NieRHook::getYPosition(void)
+{
+	return this->Ypos;
+}
+
+float NieRHook::getZPosition(void)
+{
+	return this->Zpos;
+}
+
+int NieRHook::getFunds(void)
+{
+	return this->Funds;
+}
+
+int NieRHook::getEXP(void)
+{
+	return this->EXP;
+}
+
+void NieRHook::setPosition(float X, float Y, float Z)
+{
+	NoCLip(true); //Enable noclip to teleport
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	//Write values at offsets 0x50, 0x54, 0x58 with X,Y,Z
+	WriteProcessMemory(pHandle, (LPVOID)(this->_entityAddress + 0x50), &X, sizeof(X), NULL);
+	WriteProcessMemory(pHandle, (LPVOID)(this->_entityAddress + 0x54), &Y, sizeof(Y), NULL);
+	WriteProcessMemory(pHandle, (LPVOID)(this->_entityAddress + 0x58), &Z, sizeof(Z), NULL);
+	//See if player has finished teleporting
+	while (!_isCurrentPos(X, Y, Z)) {
+		//TODO test
+	}
+	Sleep(500);
+	NoCLip(false); //Disable noclip
+	CloseHandle(pHandle);
+}
+
+void NieRHook::setHealth(int health)
+{
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	//Write Memory at offset 0x858 to set current health
+	WriteProcessMemory(pHandle, (LPVOID)(this->_entityAddress + 0x858), &health, sizeof(health), NULL);
+	CloseHandle(pHandle);
+}
+
+void NieRHook::setGameSpeed(float speed)
+{
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	//Write memory at offset 0x160E6D8 to set game speed (default 1.0 float)
+	WriteProcessMemory(pHandle, (LPVOID)(this->_baseAddress + 0x160E6D8), &speed, sizeof(speed), NULL);
+	CloseHandle(pHandle);
+}
+
+void NieRHook::NoCooldown(bool enabled)
+{
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	if (enabled) {//Enable No cooldown
+		//Set memory at offset 0x23821F = 90 90 90 90
+		Nop((BYTE*)(this->_baseAddress + 0x23821F), 9, pHandle);
+	}
+	else {//Disable No cooldown
+		//Set memory at offsets 0x1354B1 & 0x135758 = previous values
+		Patch((BYTE*)(this->_baseAddress + 0x23821F), (BYTE*)"\xF3\x0F\x11\x84\xC3\x24\x6A\x01\x00", 9, pHandle);
+	}
+	CloseHandle(pHandle);
+}
+
+void NieRHook::InfiniteAirDash(bool enabled)
+{
+
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	if (enabled) {//Enable Inf Air Dash
+		//Set memory at offset 0x1E2E5D = 90 90 90 90 90 90 90 90 90 90
+		Nop((BYTE*)(this->_baseAddress + 0x1E2E89), 10, pHandle);
+	}
+	else {//Disable Inf Air Dash
+		//Set memory at offset 0x1E2E5D = previous values
+		Patch((BYTE*)(this->_baseAddress + 0x1E2E89), (BYTE*)"\xC7\x83\x88\x0A\x01\x00\x01\x00\x00\x00", 10, pHandle);
+	}
+	CloseHandle(pHandle);
+}
+
+void NieRHook::IgnoreUpgradeMaterials(bool enabled)
+{
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	if (enabled) {//Enable Ignore Upgrade Materials
+		//Set memory at offset 0x5EE5CE = 90 90 90 
+		Nop((BYTE*)(this->_baseAddress + 0x5EE5CE), 3, pHandle);
+	}
+	else {//Disable Ignore Upgrade Materials
+		//Set memory at offset 0x5EE5CE = previous values
+		Patch((BYTE*)(this->_baseAddress + 0x5EE5CE), (BYTE*)"\x41\x3B\xC2\x7C\x31", 5, pHandle);
+	}
+	CloseHandle(pHandle);
+}
+
+void NieRHook::NoCLip(bool enabled)
+{
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	if (enabled) {//Enable noclip
+		//Set memory at offsets 0x1354B1 & 0x135758 = 90 90 90 90
+		Nop((BYTE*)(this->_baseAddress + 0x1354B1), 4, pHandle);
+		Nop((BYTE*)(this->_baseAddress + 0x135758), 4, pHandle);
+	}
+	else {//Disable noclip
+		//Set memory at offsets 0x1354B1 & 0x135758 = previous values
+		Patch((BYTE*)(this->_baseAddress + 0x1354B1), (BYTE*)"\x0F\x29\x42\x50", 4, pHandle);
+		Patch((BYTE*)(this->_baseAddress + 0x135758), (BYTE*)"\x0F\x29\x43\x50", 4, pHandle);
+	}
+	CloseHandle(pHandle);
+}
+
+void NieRHook::InfiniteDoubleJump(bool enabled)
+{
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	if (enabled) {
+		//Write FF 0f 8c to enable
+		Patch((BYTE*)(this->_baseAddress + 0x1E2D4C), (BYTE*)"\xFF\x0F\x8C", 3, pHandle);
+	}
+	else {
+		//Write 02 0F 8D to disable
+		Patch((BYTE*)(this->_baseAddress + 0x1E2D4C), (BYTE*)"\x02\x0f\x8D", 3, pHandle);
+	}
+	CloseHandle(pHandle);
 }
 
 NieRHook::NieRHook()
@@ -117,28 +328,20 @@ NieRHook::NieRHook()
 	this->_baseAddress = 0;
 	this->_entityAddress = 0;
 	this->_pID = 0;
-	Player player;
-	this->player = player;
+	this->Health = 0;
+	this->MaxHealth = 0;
+	this->Xpos = 0.000000;
+	this->Ypos = 0.000000;
+	this->Zpos = 0.000000;
+	this->EXP = 0;
+	this->Funds = 0;
+	this->Level = 0;
 }
 
 void NieRHook::start(void)
 {
 	this->_hook();//Hook
-	//Get entity address from pointer at offset 0x16053B8
-	uintptr_t entityAdd = 0;
-	uintptr_t entityAddPointer = this->_baseAddress + 0x16053B8;
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	std::cout << "Searchinf entity" << std::endl;
-	while (entityAdd == 0) {
-		ReadProcessMemory(pHandle, (LPCVOID)entityAddPointer, &entityAdd, sizeof(entityAdd), NULL);
-	}
-	CloseHandle(pHandle); //Close handle to prevent memory leaks
-	std::cout << "Entity found" << std::endl;
-	this->_entityAddress = entityAdd;
-	std::thread th2(&NieRHook::_fetchData, this); //Create thread to fetch data from memory
-	std::thread hookStatusThread(&NieRHook::_hookStatus, this); //Create thread to watch for hook status
-	th2.join();
-	hookStatusThread.join();
+	this->_updateEntity();
 }
 
 void NieRHook::stop(void)
@@ -146,17 +349,27 @@ void NieRHook::stop(void)
 	this->_unHook();
 }
 
-uintptr_t NieRHook::getBaseAddress(void)
-{
-	return this->_baseAddress;
-}
-
 DWORD NieRHook::getProcessID(void)
 {
 	return this->_pID;
 }
 
-Player* NieRHook::getPlayer()
+bool NieRHook::isHooked(void)
 {
-	return &this->player;
+	return this->_hooked;
+}
+
+int NieRHook::getLevel(void)
+{
+	return this->Level;
+}
+
+int NieRHook::getHealth(void)
+{
+	return this->Health;
+}
+
+int NieRHook::getMaxHealth(void)
+{
+	return this->MaxHealth;
 }
