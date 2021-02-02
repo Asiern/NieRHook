@@ -1,3 +1,5 @@
+#ifndef NIERHOOK_H
+#define NIERHOOK_H
 class NieRHook;
 class NieRHook {
 private:
@@ -28,12 +30,12 @@ private:
 	void _updateLevel(void);
 	void _updateFunds(void);
 	void _updateEXP(void);
-	bool _isCurrentPos(float X, float Y, float Z);
 	void Nop(BYTE* destination, unsigned int size, HANDLE hProcess);
 	void Patch(BYTE* destination, BYTE* src, unsigned int size, HANDLE hProcess);
 
 public:
 	NieRHook();
+	~NieRHook();
 	void start(void); //Start hook
 	void stop(void); //Reset hook
 	bool isHooked(void);
@@ -64,4 +66,10 @@ public:
 	void NoCooldown(bool enabled);
 	void InfiniteAirDash(bool enabled);
 	void IgnoreUpgradeMaterials(bool enabled);
+
+	//Inventory
+	bool addItem(int ID, int number);
+	bool addWeapon(int ID, int level);
 };
+
+#endif

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 #include "NierHook.hpp"
+using namespace std;
 
 //Function used to exit the program
 void ENDPressed(NieRHook* hook) {
@@ -24,15 +25,30 @@ void ENDPressed(NieRHook* hook) {
 */
 int main()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);//Look for memory leaks
+
 	NieRHook hook;
+	cout << "Hooking..." << endl;
 	//Hook to process
 	while (!hook.isHooked()) {
 		hook.start();
 	}
+	cout << "Hooked" << endl;
 
 	//Enable some cheats
 	hook.InfiniteDoubleJump(true);
 	hook.IgnoreUpgradeMaterials(true);
+
+	//Add some items
+	//For ID reference please visit github.com/Asiern/NieRHook Readme
+	hook.addItem(510, 80); //Beast Hide ID => 510
+	hook.addItem(0, 10); //Small Recovery => ID 0
+	hook.addItem(721, 1); //Data chip B => ID 721
+	hook.addItem(400, 99); //E-Drug => ID 400
+
+	//Add some weapons
+	hook.addWeapon(0x4D8, 1); //Type-40 Blade => ID 0x4D8
+	hook.addWeapon(0x41A, 1); //Type-40 Sword => ID 0x41A
 
 	//Create a thread to exit when the 'END' button is pressed
 	std::thread exitThread(ENDPressed, &hook);
