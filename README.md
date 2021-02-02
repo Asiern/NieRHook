@@ -3,6 +3,7 @@
 A C++ library to attach to the NieR:Automata process and read/write memory.
 
 [Using NieRHook](#using-nierhook) <br>
+[Memory Reference](#memory-reference)<br>
 [NieRHook Reference](#nierhook-reference)
 
 ## Using NieRHook
@@ -13,6 +14,7 @@ A C++ library to attach to the NieR:Automata process and read/write memory.
 #include <iostream>
 #include <thread>
 #include "NierHook.hpp"
+using namespace std;
 
 //Function used to exit the program
 void ENDPressed(NieRHook* hook) {
@@ -34,15 +36,30 @@ void ENDPressed(NieRHook* hook) {
 */
 int main()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);//Look for memory leaks
+
 	NieRHook hook;
+	cout << "Hooking..." << endl;
 	//Hook to process
 	while (!hook.isHooked()) {
 		hook.start();
 	}
+	cout << "Hooked" << endl;
 
 	//Enable some cheats
 	hook.InfiniteDoubleJump(true);
 	hook.IgnoreUpgradeMaterials(true);
+
+	//Add some items
+	//For ID reference please visit github.com/Asiern/NieRHook Readme
+	hook.addItem(510, 80); //Beast Hide ID => 510
+	hook.addItem(0, 10); //Small Recovery => ID 0
+	hook.addItem(721, 1); //Data chip B => ID 721
+	hook.addItem(400, 99); //E-Drug => ID 400
+
+	//Add some weapons
+	hook.addWeapon(0x4D8, 1); //Type-40 Blade => ID 0x4D8
+	hook.addWeapon(0x41A, 1); //Type-40 Sword => ID 0x41A
 
 	//Create a thread to exit when the 'END' button is pressed
 	std::thread exitThread(ENDPressed, &hook);
@@ -65,6 +82,12 @@ int main()
 
 ---
 
+## Memory Reference
+
+You can find all the used IDs and offsets [here](https://docs.google.com/spreadsheets/d/1zowU8VOamVJcsLZni7T-5OaiT8iZAEM3YYEdtVP1F8k/edit?usp=sharing)
+
+---
+
 ## NieRHook Reference
 
 #### Methods
@@ -72,7 +95,7 @@ int main()
 - `Start` - attach the hook to `NieRAutomata.exe` process
 - `Stop` - detach the hook from process
 - `isHooked` - return true if hooked
-- `hookStatus` - ensures the status of the hook, if processID changes stops
+- `hookStatus` - ensures the status of the hook, if processID changes stops the hook
 - `getProcessID` - returns process ID
 - `update` - refresh hook & attributes
 - `getLevel` - return player's level
@@ -91,3 +114,5 @@ int main()
 - `InfiniteAirDash` - enables or disables Infinite Air Dash
 - `IgnoreUpgradeMaterials` - enables or disables Ignore Upgrade Materials
 - `setGameSpeed` - sets game speed
+- `addItem` - Adds a specific quantity of items to the inventory (See item IDs at [Memory Reference](#memory-reference))
+- `addWeapon` - Adds a weapon to the inventory (See weapon IDs at [Memory Reference](#memory-reference))
