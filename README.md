@@ -116,3 +116,5 @@ You can find all the used IDs and offsets [here](https://docs.google.com/spreads
 - `setGameSpeed` - sets game speed
 - `addItem` - Adds a specific quantity of items to the inventory (See item IDs at [Memory Reference](#memory-reference))
 - `addWeapon` - Adds a weapon to the inventory (See weapon IDs at [Memory Reference](#memory-reference))
+- `setHUDOpacity` - sets the opacity of the HUD
+- `setColor` - sets RGBColor combination

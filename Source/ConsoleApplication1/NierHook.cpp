@@ -361,6 +361,22 @@ bool NieRHook::addWeapon(int ID, int level)
 	CloseHandle(pHandle);
 }
 
+void NieRHook::setHUDOpacity(float opacity)
+{
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, NULL, this->_pID);
+	WriteProcessMemory(pHandle, (LPVOID)(this->_baseAddress + 0x19861AC), &opacity, sizeof(opacity), NULL);
+	CloseHandle(pHandle);
+}
+
+void NieRHook::setColor(float R, float G, float B)
+{
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, NULL, this->_pID);
+	WriteProcessMemory(pHandle, (LPVOID)(this->_baseAddress + 0x160EB80), &R, sizeof(R), NULL);
+	WriteProcessMemory(pHandle, (LPVOID)(this->_baseAddress + 0x160EB84), &G, sizeof(G), NULL);
+	WriteProcessMemory(pHandle, (LPVOID)(this->_baseAddress + 0x160EB88), &B, sizeof(B), NULL);
+	CloseHandle(pHandle);
+}
+
 void NieRHook::NoCLip(bool enabled)
 {
 	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
