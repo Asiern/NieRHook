@@ -323,6 +323,31 @@ bool NieRHook::addItem(int ID, int number)
 	CloseHandle(pHandle);
 }
 
+bool NieRHook::removeItem(int ID)
+{
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	uintptr_t Address = this->_baseAddress + 0x197C4C4;
+	unsigned int currentID;
+	int emptySlotID = 0xffffffff;
+	if (!this->_hooked)
+	{
+		//Not hooked return
+		return false;
+	}
+	while (Address <= this->_baseAddress + 0x197CE18)
+	{
+		ReadProcessMemory(pHandle, (LPVOID)Address, &currentID, sizeof(currentID), NULL);
+		if (ID == currentID) //Item found
+		{
+			//Remove item from memory																				 //Item found on memory
+			WriteProcessMemory(pHandle, (LPVOID)(Address), &emptySlotID, sizeof(emptySlotID), NULL); //Set level
+			return true;
+		}
+		Address += 0xC; //Go to the next slot
+	}
+	return false;
+}
+
 /*
 	Add weapon to memory by ID
 	returns: true if successful and false if not
@@ -359,6 +384,28 @@ bool NieRHook::addWeapon(int ID, int level)
 	WriteProcessMemory(pHandle, (LPVOID)(emptySlot), &ID, sizeof(ID), NULL);			 //Set Weapon ID
 	WriteProcessMemory(pHandle, (LPVOID)(emptySlot + 0x4), &level, sizeof(level), NULL); //Set level, level at offset 0x4 from ID
 	CloseHandle(pHandle);
+}
+
+bool NieRHook::removeWeapon(int ID)
+{
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	uintptr_t Address = this->_baseAddress + 0x197DCC4;
+	uintptr_t emptySlotID = 0xffffffff;
+	unsigned int currentID;
+	if (!this->_hooked)
+	{
+		return false; //Return if not hooked
+	}
+	while (Address <= this->_baseAddress + 0x197DFBC)
+	{
+		ReadProcessMemory(pHandle, (LPVOID)Address, &currentID, sizeof(currentID), NULL);
+		if (ID == currentID)
+		{																							 //Weapon found on memory
+			WriteProcessMemory(pHandle, (LPVOID)(Address), &emptySlotID, sizeof(emptySlotID), NULL); //Set level
+			return true;
+		}
+		Address += 0x14; //Go to the next slot
+	}
 }
 
 void NieRHook::setHUDOpacity(float opacity)

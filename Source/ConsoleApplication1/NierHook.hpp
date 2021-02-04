@@ -70,7 +70,9 @@ public:
 
 	//Inventory
 	bool addItem(int ID, int number);
+	bool removeItem(int ID);
 	bool addWeapon(int ID, int level);
+	bool removeWeapon(int ID);
 
 	//Misc
 	void setHUDOpacity(float opacity);
