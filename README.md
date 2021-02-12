@@ -113,6 +113,7 @@ You can find all the used IDs and offsets [here](https://docs.google.com/spreads
 - `InfiniteDoubleJump` - enables or disables Infinite Double Jump
 - `InfiniteAirDash` - enables or disables Infinite Air Dash
 - `IgnoreUpgradeMaterials` - enables or disables Ignore Upgrade Materials
+- `FreeCamera` - enables or disables free camera movement
 - `setGameSpeed` - sets game speed
 - `addItem` - Adds a specific quantity of items to the inventory (See item IDs at [Memory Reference](#memory-reference))
 - `removeItem` -Removes item from memory (See item IDs at [Memory Reference](#memory-reference))
