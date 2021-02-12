@@ -58,7 +58,7 @@ DWORD NieRHook::_getProcessID(void)
 	return pID;
 }
 //Find modules in NieR:Automata process returns: memory address of module
-uintptr_t NieRHook::_getModuleBaseAddress(DWORD procId, const wchar_t* modName)
+uintptr_t NieRHook::_getModuleBaseAddress(DWORD procId, const wchar_t *modName)
 {
 	uintptr_t modBaseAddr = 0;
 	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, procId);
@@ -148,15 +148,15 @@ void NieRHook::_updateEXP(void)
 	this->EXP = exp;
 }
 //Fill memory with no Operations
-void NieRHook::Nop(BYTE* destination, unsigned int size, HANDLE hProcess)
+void NieRHook::Nop(BYTE *destination, unsigned int size, HANDLE hProcess)
 {
-	BYTE* nopArray = new BYTE[size];
+	BYTE *nopArray = new BYTE[size];
 	memset(nopArray, 0x90, size);
 	Patch(destination, nopArray, size, hProcess);
 	delete[] nopArray;
 }
 //Fill memory with custom values
-void NieRHook::Patch(BYTE* destination, BYTE* src, unsigned int size, HANDLE hProcess)
+void NieRHook::Patch(BYTE *destination, BYTE *src, unsigned int size, HANDLE hProcess)
 {
 	DWORD oldprotection;
 	VirtualProtectEx(hProcess, destination, size, PAGE_EXECUTE_READWRITE, &oldprotection);
@@ -242,12 +242,12 @@ void NieRHook::NoCooldown(bool enabled)
 	if (enabled)
 	{ //Enable No cooldown
 		//Set memory at offset 0x23821F = 90 90 90 90
-		Nop((BYTE*)(this->_baseAddress + 0x23821F), 9, pHandle);
+		Nop((BYTE *)(this->_baseAddress + 0x23821F), 9, pHandle);
 	}
 	else
 	{ //Disable No cooldown
 		//Set memory at offsets 0x1354B1 & 0x135758 = previous values
-		Patch((BYTE*)(this->_baseAddress + 0x23821F), (BYTE*)"\xF3\x0F\x11\x84\xC3\x24\x6A\x01\x00", 9, pHandle);
+		Patch((BYTE *)(this->_baseAddress + 0x23821F), (BYTE *)"\xF3\x0F\x11\x84\xC3\x24\x6A\x01\x00", 9, pHandle);
 	}
 	CloseHandle(pHandle);
 }
@@ -259,12 +259,12 @@ void NieRHook::InfiniteAirDash(bool enabled)
 	if (enabled)
 	{ //Enable Inf Air Dash
 		//Set memory at offset 0x1E2E5D = 90 90 90 90 90 90 90 90 90 90
-		Nop((BYTE*)(this->_baseAddress + 0x1E2E89), 10, pHandle);
+		Nop((BYTE *)(this->_baseAddress + 0x1E2E89), 10, pHandle);
 	}
 	else
 	{ //Disable Inf Air Dash
 		//Set memory at offset 0x1E2E5D = previous values
-		Patch((BYTE*)(this->_baseAddress + 0x1E2E89), (BYTE*)"\xC7\x83\x88\x0A\x01\x00\x01\x00\x00\x00", 10, pHandle);
+		Patch((BYTE *)(this->_baseAddress + 0x1E2E89), (BYTE *)"\xC7\x83\x88\x0A\x01\x00\x01\x00\x00\x00", 10, pHandle);
 	}
 	CloseHandle(pHandle);
 }
@@ -275,17 +275,16 @@ void NieRHook::IgnoreUpgradeMaterials(bool enabled)
 	if (enabled)
 	{ //Enable Ignore Upgrade Materials
 		//Set memory at offset 0x5EE5CE = 90 90 90 to disable Weapon
-		Nop((BYTE*)(this->_baseAddress + 0x5EE5CE), 3, pHandle);
+		Nop((BYTE *)(this->_baseAddress + 0x5EE5CE), 3, pHandle);
 		//Set memory at offset 0x5EE7F0 = 90 90 90 to disable Pod
-		Nop((BYTE*)(this->_baseAddress + 0x5EE7F0), 3, pHandle);
+		Nop((BYTE *)(this->_baseAddress + 0x5EE7F0), 3, pHandle);
 	}
 	else
 	{ //Disable Ignore Upgrade Materials
 		//Set memory at offset 0x5EE5CE = previous values
-		Patch((BYTE*)(this->_baseAddress + 0x5EE5CE), (BYTE*)"\x41\x3B\xC2\x7C\x31", 5, pHandle);
+		Patch((BYTE *)(this->_baseAddress + 0x5EE5CE), (BYTE *)"\x41\x3B\xC2\x7C\x31", 5, pHandle);
 		//Set memory at offset 0x5EE7F0 = previous values
-		Patch((BYTE*)(this->_baseAddress + 0x5EE7F0), (BYTE*)"\x83\xFB\xFF", 3, pHandle);
-
+		Patch((BYTE *)(this->_baseAddress + 0x5EE7F0), (BYTE *)"\x83\xFB\xFF", 3, pHandle);
 	}
 	CloseHandle(pHandle);
 }
@@ -437,14 +436,14 @@ void NieRHook::NoCLip(bool enabled)
 	if (enabled)
 	{ //Enable noclip
 		//Set memory at offsets 0x1354B1 & 0x135758 = 90 90 90 90
-		Nop((BYTE*)(this->_baseAddress + 0x1354B1), 4, pHandle);
-		Nop((BYTE*)(this->_baseAddress + 0x135758), 4, pHandle);
+		Nop((BYTE *)(this->_baseAddress + 0x1354B1), 4, pHandle);
+		Nop((BYTE *)(this->_baseAddress + 0x135758), 4, pHandle);
 	}
 	else
 	{ //Disable noclip
 		//Set memory at offsets 0x1354B1 & 0x135758 = previous values
-		Patch((BYTE*)(this->_baseAddress + 0x1354B1), (BYTE*)"\x0F\x29\x42\x50", 4, pHandle);
-		Patch((BYTE*)(this->_baseAddress + 0x135758), (BYTE*)"\x0F\x29\x43\x50", 4, pHandle);
+		Patch((BYTE *)(this->_baseAddress + 0x1354B1), (BYTE *)"\x0F\x29\x42\x50", 4, pHandle);
+		Patch((BYTE *)(this->_baseAddress + 0x135758), (BYTE *)"\x0F\x29\x43\x50", 4, pHandle);
 	}
 	CloseHandle(pHandle);
 }
@@ -455,14 +454,29 @@ void NieRHook::InfiniteDoubleJump(bool enabled)
 	if (enabled)
 	{
 		//Write FF 0f 8c to enable
-		Patch((BYTE*)(this->_baseAddress + 0x1E2D4C), (BYTE*)"\xFF\x0F\x8C", 3, pHandle);
+		Patch((BYTE *)(this->_baseAddress + 0x1E2D4C), (BYTE *)"\xFF\x0F\x8C", 3, pHandle);
 	}
 	else
 	{
 		//Write 02 0F 8D to disable
-		Patch((BYTE*)(this->_baseAddress + 0x1E2D4C), (BYTE*)"\x02\x0f\x8D", 3, pHandle);
+		Patch((BYTE *)(this->_baseAddress + 0x1E2D4C), (BYTE *)"\x02\x0f\x8D", 3, pHandle);
 	}
 	CloseHandle(pHandle);
+}
+
+void NieRHook::FreeCamera(bool enabled)
+{
+	HANDLE pHanlde = OpenProcess(PROCESS_ALL_ASCCESS, FALSE, this->_pID);
+	if (enabled)
+	{
+		//Enable freecam
+		Patch((BYTE *)(0x0 + this->_baseAddress), (BYTE *)"\x00\x00\x00\x00", 4, pHandle);
+	}
+	else
+	{
+		//Disable freecam
+		Patch((BYTE *)(0x0 + this->_baseAddress), (BYTE *)"\x00\x00\x00\x00", 4, pHandle);
+	}
 }
 
 NieRHook::NieRHook()
