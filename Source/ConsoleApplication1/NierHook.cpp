@@ -12,7 +12,18 @@ void NieRHook::_hook(void)
 	}
 	this->_pID = ID;
 	this->_baseAddress = this->_getModuleBaseAddress(ID, L"NieRAutomata.exe");
+	checkGameVersion(this->_pID);
 	this->_hooked = true;
+}
+
+void NieRHook::checkGameVersion(DWORD PID)
+{
+	int steamdll = _getModuleBaseAddress(PID, L"steamclient64.dll");
+
+	if (steamdll != 0)
+		this->GameVersion = GameVersion::STEAM;
+	else
+		this->GameVersion = GameVersion::UWP;
 }
 //unHook NieR:Automata
 void NieRHook::_unHook(void)
@@ -57,7 +68,8 @@ DWORD NieRHook::_getProcessID(void)
 	}
 	return pID;
 }
-//Find modules in NieR:Automata process returns: memory address of module
+//Find modules in NieR:Automata process 
+//returns: memory address of module
 uintptr_t NieRHook::_getModuleBaseAddress(DWORD procId, const wchar_t* modName)
 {
 	uintptr_t modBaseAddr = 0;
@@ -77,6 +89,10 @@ uintptr_t NieRHook::_getModuleBaseAddress(DWORD procId, const wchar_t* modName)
 				}
 			} while (Module32Next(hSnap, &modEntry));
 		}
+	}
+	else
+	{
+		return 0;
 	}
 	CloseHandle(hSnap); //Close handle to prevent memory leaks
 	return modBaseAddr;

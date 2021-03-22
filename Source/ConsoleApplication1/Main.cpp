@@ -35,6 +35,11 @@ int main()
 	}
 	cout << "Hooked" << endl;
 
+	if (hook.getGameVersion() == GameVersion::STEAM)
+		cout << "Steam Version Detected" << endl;
+	else
+		cout << "UWP Version Detected" << endl;
+	/*
 	//Enable some cheats
 	hook.InfiniteDoubleJump(true);
 	hook.IgnoreUpgradeMaterials(true);
@@ -49,10 +54,8 @@ int main()
 	//Add some weapons
 	hook.addWeapon(0x4D8, 1); //Type-40 Blade => ID 0x4D8
 	hook.addWeapon(0x41A, 1); //Type-40 Sword => ID 0x41A
-
 	//Create a thread to exit when the 'END' button is pressed
 	std::thread exitThread(ENDPressed, &hook);
-
 	//Print some values
 	while (hook.isHooked()) {
 		hook.update();//update hook internal values (Position, Health, Level...)
@@ -65,5 +68,6 @@ int main()
 
 	//Join thread and exit
 	exitThread.join();
+		*/
 	return (0);
 }
