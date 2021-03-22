@@ -1,6 +1,8 @@
 #ifndef NIERHOOK_H
 #define NIERHOOK_H
 class NieRHook;
+
+enum GameVersion{STEAM,UWP};
 class NieRHook
 {
 private:
@@ -9,7 +11,8 @@ private:
 	uintptr_t _baseAddress;
 	uintptr_t _entityAddress;
 	bool _hooked;
-
+	//Game Version
+	GameVersion GameVersion;
 	//Player Attributes
 	int Level;
 	int Health;
@@ -19,7 +22,6 @@ private:
 	float Zpos;
 	int Funds;
 	int EXP;
-
 	//Methods
 	void _hook(void);
 	void _unHook(void);
@@ -34,6 +36,8 @@ private:
 	void Nop(BYTE *destination, unsigned int size, HANDLE hProcess);
 	void Patch(BYTE *destination, BYTE *src, unsigned int size, HANDLE hProcess);
 
+	void checkGameVersion(DWORD PID);
+
 public:
 	NieRHook();
 	~NieRHook();
@@ -41,7 +45,6 @@ public:
 	void stop(void);  //Reset hook
 	bool isHooked(void);
 	void hookStatus(void);
-
 	DWORD getProcessID(void); //Returns process id
 
 	void update(void); //Update Player Attributes
@@ -55,6 +58,7 @@ public:
 	float getXPosition(void);
 	float getYPosition(void);
 	float getZPosition(void);
+	inline int getGameVersion() {return this->GameVersion;}
 
 	//Setters
 	void setPosition(float X, float Y, float Z);
