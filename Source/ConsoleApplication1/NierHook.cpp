@@ -12,6 +12,76 @@ void NieRHook::_hook(void)
 	}
 	this->_pID = ID;
 	this->_baseAddress = this->_getModuleBaseAddress(ID, L"NieRAutomata.exe");
+
+	if (true) {
+		//Define offsets UWP
+		this->_offsets = {};
+		this->_offsets.entity = 0x1020948;
+		this->_offsets.health = 0x858;
+		this->_offsets.maxHealth = 0x85c;
+		this->_offsets.x = 0x50;
+		this->_offsets.y = 0x54;
+		this->_offsets.z = 0x58;
+		this->_offsets.level = 0x14BC;
+
+		this->_offsets.items_first = 0x148C4C4;
+		this->_offsets.items_last = 0x148CE18;
+
+		this->_offsets.weapons_first = 0x148DCC4;
+		this->_offsets.weapons_last = 0x148DFBC;
+
+		this->_offsets.MusicVolume = 0x14956C0;
+		this->_offsets.SoundEffectVolume = 0x14956C4;
+		this->_offsets.VoiceVolume = 0x14956C8;
+		this->_offsets.ScreenBrightness = 0x14956DC;
+		this->_offsets.Distance = 0x14956EC;
+		this->_offsets.CombatDistance = 0x14956F0;
+		this->_offsets.VerticalRotationSpeed = 0x14956F4;
+		this->_offsets.HorizontalRotationSpeed = 0x14956F8;
+		this->_offsets.HorizontalAutoAdjust = 0x14956FC;
+		this->_offsets.VerticalAutoAdjust = 0x1495700;
+		this->_offsets.FreeEnemyTracking = 0x1495704;
+		this->_offsets.ZoomSpeed = 0x1495708;
+		this->_offsets.PursuitSpeed = 0x1495710;
+		this->_offsets.LockedEnemyTracking = 0x1495714;
+
+		this->_offsets.InfiniteDoubleJump = 0x47E257;
+	}
+	else {
+		//Define Offsets Steam OLD
+		this->_offsets = {};
+		this->_offsets.entity = 0x16053B8;
+		this->_offsets.health = 0x858;
+		this->_offsets.maxHealth = 0x85c;
+		this->_offsets.x = 0x50;
+		this->_offsets.y = 0x54;
+		this->_offsets.z = 0x58;
+		this->_offsets.level = 0x14BC;
+
+		this->_offsets.items_first = 0x197C4C4;
+		this->_offsets.items_last = 0x197CE18;
+
+		this->_offsets.weapons_first = 0x197DCC4;
+		this->_offsets.weapons_last = 0x197DFBC;
+
+		this->_offsets.MusicVolume = 0x19856C0;
+		this->_offsets.SoundEffectVolume = 0x19856C4;
+		this->_offsets.VoiceVolume = 0x19856C8;
+		this->_offsets.ScreenBrightness = 0x19856DC;
+		this->_offsets.Distance = 0x19856EC;
+		this->_offsets.CombatDistance = 0x19856F0;
+		this->_offsets.VerticalRotationSpeed = 0x19856F4;
+		this->_offsets.HorizontalRotationSpeed = 0x19856F8;
+		this->_offsets.HorizontalAutoAdjust = 0x19856FC;
+		this->_offsets.VerticalAutoAdjust = 0x1985700;
+		this->_offsets.FreeEnemyTracking = 0x1985704;
+		this->_offsets.ZoomSpeed = 0x1985708;
+		this->_offsets.PursuitSpeed = 0x1985710;
+		this->_offsets.LockedEnemyTracking = 0x1985714;
+
+		this->_offsets.InfiniteDoubleJump = 0x1E2D4C;
+	}
+
 	this->_hooked = true;
 }
 //unHook NieR:Automata
@@ -82,86 +152,15 @@ uintptr_t NieRHook::_getModuleBaseAddress(DWORD procId, const wchar_t* modName)
 	return modBaseAddr;
 }
 
-void NieRHook::_updatePosition(void)
-{
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	float Xpos;
-	float Ypos;
-	float Zpos;
-	uintptr_t XAddress = static_cast<uintptr_t>((DWORD)this->_entityAddress) + 0x50;
-	uintptr_t YAddress = static_cast<uintptr_t>((DWORD)this->_entityAddress) + 0x54;
-	uintptr_t ZAddress = static_cast<uintptr_t>((DWORD)this->_entityAddress) + 0x58;
-	ReadProcessMemory(pHandle, (LPCVOID)XAddress, &Xpos, sizeof(Xpos), NULL);
-	ReadProcessMemory(pHandle, (LPCVOID)YAddress, &Ypos, sizeof(Ypos), NULL);
-	ReadProcessMemory(pHandle, (LPCVOID)ZAddress, &Zpos, sizeof(Zpos), NULL);
-	this->Xpos = Xpos;
-	this->Ypos = Ypos;
-	this->Zpos = Zpos;
-}
-
-void NieRHook::_updateHealth(void)
-{
-	int h = 0;
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	ReadProcessMemory(pHandle, (LPCVOID)(this->_entityAddress + 0x858), &h, sizeof(h), NULL);
-	this->Health = h;
-	ReadProcessMemory(pHandle, (LPCVOID)(this->_entityAddress + 0x85c), &h, sizeof(h), NULL);
-	CloseHandle(pHandle); //Close handle to prevent memory leaks
-	this->MaxHealth = h;
-}
-
-void NieRHook::_updateEntity(void)
-{
-	//Get entity address from pointer at offset 0x16053B8
-	uintptr_t entityAdd = 0;
-	uintptr_t entityAddPointer = this->_baseAddress + 0x16053B8;
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	ReadProcessMemory(pHandle, (LPCVOID)entityAddPointer, &entityAdd, sizeof(entityAdd), NULL);
-	CloseHandle(pHandle); //Close handle to prevent memory leaks
-	this->_entityAddress = entityAdd;
-}
-
-void NieRHook::_updateLevel(void)
-{
-	int lvl = 0;
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	ReadProcessMemory(pHandle, (LPCVOID)(this->_entityAddress + 0x14BC), &lvl, sizeof(lvl), NULL);
-	CloseHandle(pHandle); //Close handle to prevent memory leaks
-	this->Level = lvl;
-}
-
-void NieRHook::_updateFunds(void)
-{
-	int funds = 0;
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	ReadProcessMemory(pHandle, (LPCVOID)(this->_baseAddress + 0x197C4C0), &funds, sizeof(funds), NULL);
-	CloseHandle(pHandle); //Close handle to prevent memory leaks
-	this->Funds = funds;
-}
-
-void NieRHook::_updateEXP(void)
-{
-	int exp = 0;
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	ReadProcessMemory(pHandle, (LPCVOID)(this->_baseAddress + 0x1984670), &exp, sizeof(exp), NULL);
-	CloseHandle(pHandle); //Close handle to prevent memory leaks
-	this->EXP = exp;
-}
-//Fill memory with no Operations
-void NieRHook::Nop(BYTE* destination, unsigned int size, HANDLE hProcess)
-{
-	BYTE* nopArray = new BYTE[size];
-	memset(nopArray, 0x90, size);
-	Patch(destination, nopArray, size, hProcess);
-	delete[] nopArray;
-}
 //Fill memory with custom values
-void NieRHook::Patch(BYTE* destination, BYTE* src, unsigned int size, HANDLE hProcess)
+void NieRHook::_patch(BYTE* destination, BYTE* src, unsigned int size)
 {
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
 	DWORD oldprotection;
-	VirtualProtectEx(hProcess, destination, size, PAGE_EXECUTE_READWRITE, &oldprotection);
-	WriteProcessMemory(hProcess, destination, src, size, nullptr);
-	VirtualProtectEx(hProcess, destination, size, oldprotection, &oldprotection);
+	VirtualProtectEx(pHandle, destination, size, PAGE_EXECUTE_READWRITE, &oldprotection);
+	WriteProcessMemory(pHandle, destination, src, size, nullptr);
+	VirtualProtectEx(pHandle, destination, size, oldprotection, &oldprotection);
+	CloseHandle(pHandle);
 }
 
 void NieRHook::hookStatus(void)
@@ -171,15 +170,18 @@ void NieRHook::hookStatus(void)
 		this->_unHook();
 	}
 }
+
 //Update Player Attributes
 void NieRHook::update(void)
 {
-	_updateEntity();
-	_updateHealth();
-	_updatePosition();
-	_updateLevel();
-	_updateFunds();
-	_updateEXP();
+	this->_entityAddress = this->readMemory<uintptr_t>(this->_baseAddress + this->_offsets.entity);
+	this->Health = readMemory<int>(this->_entityAddress + this->_offsets.health);
+	this->MaxHealth = readMemory<int>(this->_entityAddress + this->_offsets.maxHealth);
+	this->Xpos = readMemory<float>(this->_entityAddress + this->_offsets.x);
+	this->Ypos = readMemory<float>(this->_entityAddress + this->_offsets.y);
+	this->Zpos = readMemory<float>(this->_entityAddress + this->_offsets.z);
+	this->Level = readMemory<int>(this->_entityAddress + this->_offsets.level);
+	//this->EXP = readMemory<int>(0x1984670);
 }
 
 float NieRHook::getXPosition(void)
@@ -207,86 +209,97 @@ int NieRHook::getEXP(void)
 	return this->EXP;
 }
 
+void NieRHook::setX(float X)
+{
+	NoCLip(true); //Enable noclip to teleport
+	this->writeMemory(this->_entityAddress + this->_offsets.x, X);
+	Sleep(500);
+	NoCLip(false); //Disable noclip
+}
+
+void NieRHook::setY(float Y)
+{
+	NoCLip(true); //Enable noclip to teleport
+	this->writeMemory(this->_entityAddress + this->_offsets.y, Y);
+	Sleep(500);
+	NoCLip(false); //Disable noclip
+}
+
+void NieRHook::setZ(float Z)
+{
+	NoCLip(true); //Enable noclip to teleport
+	this->writeMemory(this->_entityAddress + this->_offsets.z, Z);
+	Sleep(500);
+	NoCLip(false); //Disable noclip
+}
+
 void NieRHook::setPosition(float X, float Y, float Z)
 {
 	NoCLip(true); //Enable noclip to teleport
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
 	//Write values at offsets 0x50, 0x54, 0x58 with X,Y,Z
-	WriteProcessMemory(pHandle, (LPVOID)(this->_entityAddress + 0x50), &X, sizeof(X), NULL);
-	WriteProcessMemory(pHandle, (LPVOID)(this->_entityAddress + 0x54), &Y, sizeof(Y), NULL);
-	WriteProcessMemory(pHandle, (LPVOID)(this->_entityAddress + 0x58), &Z, sizeof(Z), NULL);
+	this->writeMemory(this->_entityAddress + this->_offsets.x, X);
+	this->writeMemory(this->_entityAddress + this->_offsets.y, Y);
+	this->writeMemory(this->_entityAddress + this->_offsets.z, Z);
 	Sleep(500);
 	NoCLip(false); //Disable noclip
-	CloseHandle(pHandle);
 }
 
 void NieRHook::setHealth(int health)
 {
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
 	//Write Memory at offset 0x858 to set current health
-	WriteProcessMemory(pHandle, (LPVOID)(this->_entityAddress + 0x858), &health, sizeof(health), NULL);
-	CloseHandle(pHandle);
+	this->writeMemory(this->_entityAddress + this->_offsets.health, health);
 }
 
 void NieRHook::setGameSpeed(float speed)
 {
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
 	//Write memory at offset 0x160E6D8 to set game speed (default 1.0 float)
-	WriteProcessMemory(pHandle, (LPVOID)(this->_baseAddress + 0x160E6D8), &speed, sizeof(speed), NULL);
-	CloseHandle(pHandle);
+	/*this->writeMemory(0x160E6D8, speed);*/
 }
 
 void NieRHook::NoCooldown(bool enabled)
 {
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	if (enabled)
-	{ //Enable No cooldown
-		//Set memory at offset 0x23821F = 90 90 90 90
-		Nop((BYTE*)(this->_baseAddress + 0x23821F), 9, pHandle);
-	}
-	else
-	{ //Disable No cooldown
-		//Set memory at offsets 0x1354B1 & 0x135758 = previous values
-		Patch((BYTE*)(this->_baseAddress + 0x23821F), (BYTE*)"\xF3\x0F\x11\x84\xC3\x24\x6A\x01\x00", 9, pHandle);
-	}
-	CloseHandle(pHandle);
+	//if (enabled)
+	//{ //Enable No cooldown
+	//	//Set memory at offset 0x23821F = 90 90 90 90
+	//	_patch((BYTE*)(this->_baseAddress + 0x4CED62), (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9);
+	//}
+	//else
+	//{ //Disable No cooldown
+	//	//Set memory at offsets 0x1354B1 & 0x135758 = previous values
+	//	_patch((BYTE*)(this->_baseAddress + 0x4CED62), (BYTE*)"\xF3\x0F\x11\x84\xC7\x34\x6A\x01\x00", 9);
+	//}
 }
 
 void NieRHook::InfiniteAirDash(bool enabled)
 {
-
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	if (enabled)
-	{ //Enable Inf Air Dash
-		//Set memory at offset 0x1E2E5D = 90 90 90 90 90 90 90 90 90 90
-		Nop((BYTE*)(this->_baseAddress + 0x1E2E89), 10, pHandle);
-	}
-	else
-	{ //Disable Inf Air Dash
-		//Set memory at offset 0x1E2E5D = previous values
-		Patch((BYTE*)(this->_baseAddress + 0x1E2E89), (BYTE*)"\xC7\x83\x88\x0A\x01\x00\x01\x00\x00\x00", 10, pHandle);
-	}
-	CloseHandle(pHandle);
+	//if (enabled)
+	//{ //Enable Inf Air Dash
+	//	//Set memory at offset 0x1E2E5D = 90 90 90 90 90 90 90 90 90 90
+	//	_patch((BYTE*)(this->_baseAddress + 0x4AA807), (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 1);
+	//}
+	//else
+	//{ //Disable Inf Air Dash
+	//	//Set memory at offset 0x1E2E5D = previous values
+	//	_patch((BYTE*)(this->_baseAddress + 0x1E2E89), (BYTE*)"\xC7\x83\x88\x0A\x01\x00\x01\x00\x00\x00", 10);
+	//}
 }
 
 void NieRHook::IgnoreUpgradeMaterials(bool enabled)
 {
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	if (enabled)
-	{ //Enable Ignore Upgrade Materials
-		//Set memory at offset 0x5EE5CE = 90 90 90 to disable Weapon
-		Nop((BYTE*)(this->_baseAddress + 0x5EE5CE), 3, pHandle);
-		//Set memory at offset 0x5EE7F0 = 90 90 90 to disable Pod
-		Nop((BYTE*)(this->_baseAddress + 0x5EE7F0), 3, pHandle);
-	}
-	else
-	{ //Disable Ignore Upgrade Materials
-		//Set memory at offset 0x5EE5CE = previous values
-		Patch((BYTE*)(this->_baseAddress + 0x5EE5CE), (BYTE*)"\x41\x3B\xC2\x7C\x31", 5, pHandle);
-		//Set memory at offset 0x5EE7F0 = previous values
-		Patch((BYTE*)(this->_baseAddress + 0x5EE7F0), (BYTE*)"\x83\xFB\xFF", 3, pHandle);
-	}
-	CloseHandle(pHandle);
+	//if (enabled)
+	//{ //Enable Ignore Upgrade Materials
+	//	//Set memory at offset 0x5EE5CE = 90 90 90 to disable Weapon
+	//	_patch((BYTE*)(this->_baseAddress + 0x4E01CA), (BYTE*)"\x90\x90\x90", 3);
+	//	//Set memory at offset 0x5EE7F0 = 90 90 90 to disable Pod
+	//	_patch((BYTE*)(this->_baseAddress + 0x5082D8), (BYTE*)"\x90\x90\x90", 3);
+	//}
+	//else
+	//{ //Disable Ignore Upgrade Materials
+	//	//Set memory at offset 0x5EE5CE = previous values
+	//	_patch((BYTE*)(this->_baseAddress + 0x4E01CA), (BYTE*)"\x41\x3B\xC2", 3);
+	//	//Set memory at offset 0x5EE7F0 = previous values
+	//	_patch((BYTE*)(this->_baseAddress + 0x5082D8), (BYTE*)"\x83\xFB\xFF", 3);
+	//}
 }
 /*
 	Add item to inventory
@@ -295,20 +308,19 @@ void NieRHook::IgnoreUpgradeMaterials(bool enabled)
 */
 bool NieRHook::addItem(int ID, int number)
 {
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	uintptr_t Address = this->_baseAddress + 0x197C4C4;
+	uintptr_t Address = this->_baseAddress + this->_offsets.items_first;
 	uintptr_t emptySlot = 0;
 	unsigned int currentID;
 	if (!this->_hooked)
 	{
 		return false;
 	}
-	while (Address <= this->_baseAddress + 0x197CE18)
+	while (Address <= this->_baseAddress + this->_offsets.items_last)
 	{
-		ReadProcessMemory(pHandle, (LPVOID)Address, &currentID, sizeof(currentID), NULL);
+		currentID = readMemory<unsigned int>(Address);
 		if (ID == currentID)
-		{																						 //Item found on memory
-			WriteProcessMemory(pHandle, (LPVOID)(Address + 0x8), &number, sizeof(number), NULL); //Set level
+		{	//Item found on memory
+			writeMemory(Address + 0x8, number);
 			return true;
 		}
 		else if (emptySlot == 0 && currentID == 0xffffffff)
@@ -322,29 +334,26 @@ bool NieRHook::addItem(int ID, int number)
 		return false;
 	}
 	//Item not found on memory, create on empty slot
-	WriteProcessMemory(pHandle, (LPVOID)(emptySlot), &ID, sizeof(ID), NULL);			   //Set level
-	WriteProcessMemory(pHandle, (LPVOID)(emptySlot + 0x8), &number, sizeof(number), NULL); //Set level
-	CloseHandle(pHandle);
+	writeMemory(emptySlot, ID);		    //Set ID
+	writeMemory(Address + 0x8, number); //Set level
 }
 
 bool NieRHook::removeItem(int ID)
 {
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	uintptr_t Address = this->_baseAddress + 0x197C4C4;
+	uintptr_t Address = this->_baseAddress + this->_offsets.items_first;
 	unsigned int currentID;
-	int emptySlotID = 0xffffffff;
 	if (!this->_hooked)
 	{
 		//Not hooked return
 		return false;
 	}
-	while (Address <= this->_baseAddress + 0x197CE18)
+	while (Address <= this->_baseAddress + this->_offsets.items_last)
 	{
-		ReadProcessMemory(pHandle, (LPVOID)Address, &currentID, sizeof(currentID), NULL);
+		currentID = readMemory<unsigned int>(Address);
 		if (ID == currentID) //Item found
 		{
-			//Remove item from memory																				 //Item found on memory
-			WriteProcessMemory(pHandle, (LPVOID)(Address), &emptySlotID, sizeof(emptySlotID), NULL); //Set level
+			//Remove item from memory
+			writeMemory(Address, 0xFFFFFFFF);
 			return true;
 		}
 		Address += 0xC; //Go to the next slot
@@ -358,20 +367,19 @@ bool NieRHook::removeItem(int ID)
 */
 bool NieRHook::addWeapon(int ID, int level)
 {
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	uintptr_t Address = this->_baseAddress + 0x197DCC4;
+	uintptr_t Address = this->_baseAddress + this->_offsets.weapons_first;
 	uintptr_t emptySlot = 0;
 	unsigned int currentID;
 	if (!this->_hooked)
 	{
 		return false; //Return if not hooked
 	}
-	while (Address <= this->_baseAddress + 0x197DFBC)
+	while (Address <= this->_baseAddress + this->_offsets.weapons_last)
 	{
-		ReadProcessMemory(pHandle, (LPVOID)Address, &currentID, sizeof(currentID), NULL);
+		currentID = readMemory<unsigned int>(Address);
 		if (ID == currentID)
-		{																					   //Weapon found on memory
-			WriteProcessMemory(pHandle, (LPVOID)(Address + 0x4), &level, sizeof(level), NULL); //Set level
+		{										//Weapon found on memory
+			writeMemory(Address + 0x4, level);  //Set level			
 			return true;
 		}
 		if (emptySlot == 0 && currentID == 0xffffffff)
@@ -385,28 +393,25 @@ bool NieRHook::addWeapon(int ID, int level)
 		return false;
 	}
 	//Weapon not found on memory
-	WriteProcessMemory(pHandle, (LPVOID)(emptySlot), &ID, sizeof(ID), NULL);			 //Set Weapon ID
-	WriteProcessMemory(pHandle, (LPVOID)(emptySlot + 0x4), &level, sizeof(level), NULL); //Set level, level at offset 0x4 from ID
-	CloseHandle(pHandle);
+	writeMemory(emptySlot, ID);	//Set Weapon ID
+	writeMemory(emptySlot + 0x4, level);//Set level, level at offset 0x4 from ID
 	return true;
 }
 
 bool NieRHook::removeWeapon(int ID)
 {
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	uintptr_t Address = this->_baseAddress + 0x197DCC4;
-	uintptr_t emptySlotID = 0xffffffff;
+	uintptr_t Address = this->_baseAddress + this->_offsets.weapons_first;
 	unsigned int currentID;
 	if (!this->_hooked)
 	{
 		return false; //Return if not hooked
 	}
-	while (Address <= this->_baseAddress + 0x197DFBC)
+	while (Address <= this->_baseAddress + this->_offsets.weapons_last)
 	{
-		ReadProcessMemory(pHandle, (LPVOID)Address, &currentID, sizeof(currentID), NULL);
+		currentID = readMemory<unsigned int>(Address);
 		if (ID == currentID)
-		{																							 //Weapon found on memory
-			WriteProcessMemory(pHandle, (LPVOID)(Address), &emptySlotID, sizeof(emptySlotID), NULL); //Set level
+		{	//Weapon found on memory
+			writeMemory(Address, 0xffffffff);
 			return true;
 		}
 		Address += 0x14; //Go to the next slot
@@ -414,72 +419,51 @@ bool NieRHook::removeWeapon(int ID)
 	return false;
 }
 
-void NieRHook::setHUDOpacity(float opacity)
-{
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, NULL, this->_pID);
-	WriteProcessMemory(pHandle, (LPVOID)(this->_baseAddress + 0x19861AC), &opacity, sizeof(opacity), NULL);
-	CloseHandle(pHandle);
-}
-
-void NieRHook::setColor(float R, float G, float B)
-{
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, NULL, this->_pID);
-	WriteProcessMemory(pHandle, (LPVOID)(this->_baseAddress + 0x160EB80), &R, sizeof(R), NULL);
-	WriteProcessMemory(pHandle, (LPVOID)(this->_baseAddress + 0x160EB84), &G, sizeof(G), NULL);
-	WriteProcessMemory(pHandle, (LPVOID)(this->_baseAddress + 0x160EB88), &B, sizeof(B), NULL);
-	CloseHandle(pHandle);
-}
-
 void NieRHook::NoCLip(bool enabled)
 {
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	if (enabled)
-	{ //Enable noclip
-		//Set memory at offsets 0x1354B1 & 0x135758 = 90 90 90 90
-		Nop((BYTE*)(this->_baseAddress + 0x1354B1), 4, pHandle);
-		Nop((BYTE*)(this->_baseAddress + 0x135758), 4, pHandle);
-	}
-	else
-	{ //Disable noclip
-		//Set memory at offsets 0x1354B1 & 0x135758 = previous values
-		Patch((BYTE*)(this->_baseAddress + 0x1354B1), (BYTE*)"\x0F\x29\x42\x50", 4, pHandle);
-		Patch((BYTE*)(this->_baseAddress + 0x135758), (BYTE*)"\x0F\x29\x43\x50", 4, pHandle);
-	}
-	CloseHandle(pHandle);
+	//if (enabled)
+	//{ //Enable noclip
+	//	//Set memory at offsets 0x1354B1 & 0x135758 = 90 90 90 90
+	//	_patch((BYTE*)(this->_baseAddress + 0x1354B1), (BYTE*)"\x90\x90\x90\x90", 4);
+	//	_patch((BYTE*)(this->_baseAddress + 0x135758), (BYTE*)"\x90\x90\x90\x90", 4);
+	//}
+	//else
+	//{ //Disable noclip
+	//	//Set memory at offsets 0x1354B1 & 0x135758 = previous values
+	//	_patch((BYTE*)(this->_baseAddress + 0x1354B1), (BYTE*)"\x0F\x29\x42\x50", 4);
+	//	_patch((BYTE*)(this->_baseAddress + 0x135758), (BYTE*)"\x0F\x29\x43\x50", 4);
+	//}
 }
 
 void NieRHook::InfiniteDoubleJump(bool enabled)
 {
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
 	if (enabled)
 	{
 		//Write FF 0f 8c to enable
-		Patch((BYTE*)(this->_baseAddress + 0x1E2D4C), (BYTE*)"\xFF\x0F\x8C", 3, pHandle);
+		_patch((BYTE*)(this->_baseAddress + 0x47E257), (BYTE*)"\xFF\x0F\x8C", 3);
 	}
 	else
 	{
 		//Write 02 0F 8D to disable
-		Patch((BYTE*)(this->_baseAddress + 0x1E2D4C), (BYTE*)"\x02\x0f\x8D", 3, pHandle);
+		_patch((BYTE*)(this->_baseAddress + 0x47E257), (BYTE*)"\x02\x0f\x8D", 3);
 	}
-	CloseHandle(pHandle);
 }
 
 void NieRHook::FreeCamera(bool enabled)
 {
-	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
-	int value;
-	if (enabled)
-	{
-		//Enable freecam
-		value = 0x80000000;
-		WriteProcessMemory(pHandle, (LPVOID)0x141415B90, &value, sizeof(value), NULL);
-	}
-	else
-	{
-		//Disable freecam
-		value = 0;
-		WriteProcessMemory(pHandle, (LPVOID)0x141415B90, &value, sizeof(value), NULL);
-	}
+	//int value;
+	//if (enabled)
+	//{
+	//	//Enable freecam
+	//	value = 0x80000000;
+	//	writeMemory(0x141415B90, value);
+	//}
+	//else
+	//{
+	//	//Disable freecam
+	//	value = 0;
+	//	writeMemory(0x141415B90, value);
+	//}
 }
 
 NieRHook::NieRHook()
@@ -496,6 +480,7 @@ NieRHook::NieRHook()
 	this->EXP = 0;
 	this->Funds = 0;
 	this->Level = 0;
+	this->_offsets = {};
 }
 
 NieRHook::~NieRHook()
@@ -505,7 +490,6 @@ NieRHook::~NieRHook()
 void NieRHook::start(void)
 {
 	this->_hook(); //Hook
-	this->_updateEntity();
 }
 
 void NieRHook::stop(void)
@@ -536,4 +520,86 @@ int NieRHook::getHealth(void)
 int NieRHook::getMaxHealth(void)
 {
 	return this->MaxHealth;
+}
+
+void NieRHook::setHUDOpacity(float opacity)
+{
+	writeMemory(this->_baseAddress + _offsets.HUDOpacity, opacity);
+}
+
+void NieRHook::setColor(float R, float G, float B)
+{
+	writeMemory(this->_baseAddress + _offsets.R, R);
+	writeMemory(this->_baseAddress + _offsets.G, G);
+	writeMemory(this->_baseAddress + _offsets.B, B);
+}
+
+void NieRHook::setBrightness(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.ScreenBrightness, value);
+}
+
+void NieRHook::setMusicVolume(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.MusicVolume, value);
+}
+
+void NieRHook::setSoundEffectVolume(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.SoundEffectVolume, value);
+}
+
+void NieRHook::setVoiceVolume(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.VoiceVolume, value);
+}
+
+void NieRHook::setHorizontalRotationSpeed(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.HorizontalRotationSpeed, value);
+}
+
+void NieRHook::setVerticalRotationSpeed(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.VerticalRotationSpeed, value);
+}
+
+void NieRHook::setDistance(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.Distance, value);
+}
+
+void NieRHook::setCombatDistance(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.CombatDistance, value);
+}
+
+void NieRHook::setZoomSpeed(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.ZoomSpeed, value);
+}
+
+void NieRHook::setVerticalAutoAdjust(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.VerticalAutoAdjust, value);
+}
+
+void NieRHook::setHorizontalAutoAdjust(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.HorizontalAutoAdjust, value);
+}
+
+void NieRHook::setFreeEnemyTracking(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.FreeEnemyTracking, value);
+}
+
+void NieRHook::setPursuitSpeed(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.PursuitSpeed, value);
+}
+
+void NieRHook::setLockedEnemyTracking(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.LockedEnemyTracking, value);
 }

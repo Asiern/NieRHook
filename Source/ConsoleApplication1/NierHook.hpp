@@ -1,3 +1,4 @@
+#include "Offsets.hpp"
 #ifndef NIERHOOK_H
 #define NIERHOOK_H
 class NieRHook;
@@ -9,6 +10,7 @@ private:
 	uintptr_t _baseAddress;
 	uintptr_t _entityAddress;
 	bool _hooked;
+	offsets _offsets;
 
 	//Player Attributes
 	int Level;
@@ -24,15 +26,12 @@ private:
 	void _hook(void);
 	void _unHook(void);
 	DWORD _getProcessID(void);
-	uintptr_t _getModuleBaseAddress(DWORD procId, const wchar_t *modName);
-	void _updatePosition(void);
-	void _updateHealth(void);
-	void _updateEntity(void);
-	void _updateLevel(void);
-	void _updateFunds(void);
-	void _updateEXP(void);
-	void Nop(BYTE *destination, unsigned int size, HANDLE hProcess);
-	void Patch(BYTE *destination, BYTE *src, unsigned int size, HANDLE hProcess);
+	uintptr_t _getModuleBaseAddress(DWORD procId, const wchar_t* modName);
+	void _patch(BYTE* destination, BYTE* src, unsigned int size);
+	template <typename T>
+	T readMemory(uintptr_t address);
+	template <typename T>
+	void writeMemory(uintptr_t address, T value);
 
 public:
 	NieRHook();
@@ -57,6 +56,9 @@ public:
 	float getZPosition(void);
 
 	//Setters
+	void setX(float X);
+	void setY(float Y);
+	void setZ(float Z);
 	void setPosition(float X, float Y, float Z);
 	void setHealth(int health);
 
@@ -78,6 +80,38 @@ public:
 	//Misc
 	void setHUDOpacity(float opacity);
 	void setColor(float R, float G, float B);
+	void setBrightness(int value);
+	void setMusicVolume(int value);
+	void setSoundEffectVolume(int value);
+	void setVoiceVolume(int value);
+	void setHorizontalRotationSpeed(int value);
+	void setVerticalRotationSpeed(int value);
+	void setDistance(int value);
+	void setCombatDistance(int value);
+	void setZoomSpeed(int value);
+	void setVerticalAutoAdjust(int value);
+	void setHorizontalAutoAdjust(int value);
+	void setFreeEnemyTracking(int value);
+	void setPursuitSpeed(int value);
+	void setLockedEnemyTracking(int value);
 };
+
+template<typename T>
+inline T NieRHook::readMemory(uintptr_t address)
+{
+	T value;
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	ReadProcessMemory(pHandle, (LPCVOID)(address), &value, sizeof(value), NULL);
+	CloseHandle(pHandle); //Close handle to prevent memory leaks
+	return value;
+}
+
+template<typename T>
+inline void NieRHook::writeMemory(uintptr_t address, T value)
+{
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	WriteProcessMemory(pHandle, (LPVOID)(address), &value, sizeof(value), NULL);
+	CloseHandle(pHandle);
+}
 
 #endif
