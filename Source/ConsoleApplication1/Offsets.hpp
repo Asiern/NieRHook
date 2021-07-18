@@ -25,6 +25,8 @@ struct offsets {
 	uintptr_t MusicVolume;
 	uintptr_t SoundEffectVolume;
 	uintptr_t VoiceVolume;
+	uintptr_t AudioOutput;
+	uintptr_t VoiceChanger;
 	uintptr_t ScreenBrightness;
 	uintptr_t Distance;
 	uintptr_t CombatDistance;

@@ -70,6 +70,7 @@ public:
 	void InfiniteAirDash(bool enabled);
 	void IgnoreUpgradeMaterials(bool enabled);
 	void FreeCamera(bool enabled);
+	void InfiniteItemUsage(bool enabled);
 
 	//Inventory
 	bool addItem(int ID, int number);
@@ -78,22 +79,42 @@ public:
 	bool removeWeapon(int ID);
 
 	//Misc
-	void setHUDOpacity(float opacity);
-	void setColor(float R, float G, float B);
-	void setBrightness(int value);
 	void setMusicVolume(int value);
 	void setSoundEffectVolume(int value);
 	void setVoiceVolume(int value);
-	void setHorizontalRotationSpeed(int value);
-	void setVerticalRotationSpeed(int value);
+	void setAudioOutput(int value);
+	void setVoiceChanger(int value);
+	void setBrightness(int value);
 	void setDistance(int value);
 	void setCombatDistance(int value);
-	void setZoomSpeed(int value);
-	void setVerticalAutoAdjust(int value);
+	void setVerticalRotationSpeed(int value);
+	void setHorizontalRotationSpeed(int value);
 	void setHorizontalAutoAdjust(int value);
+	void setVerticalAutoAdjust(int value);
 	void setFreeEnemyTracking(int value);
+	void setZoomSpeed(int value);
 	void setPursuitSpeed(int value);
 	void setLockedEnemyTracking(int value);
+	void setHUDOpacity(float opacity);
+	void setColor(float R, float G, float B);
+
+	int getMusicVolume();
+	int getSoundEffectVolume();
+	int getVoiceVolume();
+	int getAudioOutput();
+	int getVoiceChanger();
+	int getBrightness();
+	int getDistance();
+	int getCombatDistance();
+	int getVerticalRotationSpeed();
+	int getHorizontalRotationSpeed();
+	int getHorizontalAutoAdjust();
+	int getVerticalAutoAdjust();
+	int getFreeEnemyTracking();
+	int getZoomSpeed();
+	int getPursuitSpeed();
+	int getLockedEnemyTracking();
+	float getHUDOpacity();
 };
 
 template<typename T>

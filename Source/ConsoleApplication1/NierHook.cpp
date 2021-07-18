@@ -23,6 +23,7 @@ void NieRHook::_hook(void)
 		this->_offsets.y = 0x54;
 		this->_offsets.z = 0x58;
 		this->_offsets.level = 0x14BC;
+		this->_offsets.exp = 0xFC6060;
 
 		this->_offsets.items_first = 0x148C4C4;
 		this->_offsets.items_last = 0x148CE18;
@@ -33,6 +34,8 @@ void NieRHook::_hook(void)
 		this->_offsets.MusicVolume = 0x14956C0;
 		this->_offsets.SoundEffectVolume = 0x14956C4;
 		this->_offsets.VoiceVolume = 0x14956C8;
+		this->_offsets.AudioOutput = 0x14956CC;
+		this->_offsets.VoiceChanger = 0x14956D0;
 		this->_offsets.ScreenBrightness = 0x14956DC;
 		this->_offsets.Distance = 0x14956EC;
 		this->_offsets.CombatDistance = 0x14956F0;
@@ -57,6 +60,7 @@ void NieRHook::_hook(void)
 		this->_offsets.y = 0x54;
 		this->_offsets.z = 0x58;
 		this->_offsets.level = 0x14BC;
+		this->_offsets.exp = 0x1984670;
 
 		this->_offsets.items_first = 0x197C4C4;
 		this->_offsets.items_last = 0x197CE18;
@@ -67,6 +71,8 @@ void NieRHook::_hook(void)
 		this->_offsets.MusicVolume = 0x19856C0;
 		this->_offsets.SoundEffectVolume = 0x19856C4;
 		this->_offsets.VoiceVolume = 0x19856C8;
+		this->_offsets.AudioOutput = 0x19856CC;
+		this->_offsets.VoiceChanger = 0x19856D0;
 		this->_offsets.ScreenBrightness = 0x19856DC;
 		this->_offsets.Distance = 0x19856EC;
 		this->_offsets.CombatDistance = 0x19856F0;
@@ -181,7 +187,7 @@ void NieRHook::update(void)
 	this->Ypos = readMemory<float>(this->_entityAddress + this->_offsets.y);
 	this->Zpos = readMemory<float>(this->_entityAddress + this->_offsets.z);
 	this->Level = readMemory<int>(this->_entityAddress + this->_offsets.level);
-	//this->EXP = readMemory<int>(0x1984670);
+	this->EXP = readMemory<int>(this->_baseAddress + this->_offsets.exp);
 }
 
 float NieRHook::getXPosition(void)
@@ -272,16 +278,17 @@ void NieRHook::NoCooldown(bool enabled)
 
 void NieRHook::InfiniteAirDash(bool enabled)
 {
-	//if (enabled)
-	//{ //Enable Inf Air Dash
-	//	//Set memory at offset 0x1E2E5D = 90 90 90 90 90 90 90 90 90 90
-	//	_patch((BYTE*)(this->_baseAddress + 0x4AA807), (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 1);
-	//}
-	//else
-	//{ //Disable Inf Air Dash
-	//	//Set memory at offset 0x1E2E5D = previous values
-	//	_patch((BYTE*)(this->_baseAddress + 0x1E2E89), (BYTE*)"\xC7\x83\x88\x0A\x01\x00\x01\x00\x00\x00", 10);
-	//}
+	if (enabled)
+	{ //Enable Inf Air Dash
+		//Set memory at offset 0x1E2E5D = 90 90 90 90 90 90 90 90 90 90
+		_patch((BYTE*)(this->_baseAddress + 0x47E391), (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
+	}
+	else
+	{ //Disable Inf Air Dash
+		//Set memory at offset 0x1E2E5D = previous values
+		//_patch((BYTE*)(this->_baseAddress + 0x47E391), (BYTE*)"\xC7\x83\x88\x0A\x01\x00\x01\x00\x00\x00", 10);
+		_patch((BYTE*)(this->_baseAddress + 0x47E391), (BYTE*)"\xC7\x83\x98\x0A\x01\x00\x01\x00\x00\x00", 10);
+	}
 }
 
 void NieRHook::IgnoreUpgradeMaterials(bool enabled)
@@ -301,6 +308,64 @@ void NieRHook::IgnoreUpgradeMaterials(bool enabled)
 	//	_patch((BYTE*)(this->_baseAddress + 0x5082D8), (BYTE*)"\x83\xFB\xFF", 3);
 	//}
 }
+
+void NieRHook::NoCLip(bool enabled)
+{
+	//if (enabled)
+	//{ //Enable noclip
+	//	//Set memory at offsets 0x1354B1 & 0x135758 = 90 90 90 90
+	//	_patch((BYTE*)(this->_baseAddress + 0x1354B1), (BYTE*)"\x90\x90\x90\x90", 4);
+	//	_patch((BYTE*)(this->_baseAddress + 0x135758), (BYTE*)"\x90\x90\x90\x90", 4);
+	//}
+	//else
+	//{ //Disable noclip
+	//	//Set memory at offsets 0x1354B1 & 0x135758 = previous values
+	//	_patch((BYTE*)(this->_baseAddress + 0x1354B1), (BYTE*)"\x0F\x29\x42\x50", 4);
+	//	_patch((BYTE*)(this->_baseAddress + 0x135758), (BYTE*)"\x0F\x29\x43\x50", 4);
+	//}
+}
+
+void NieRHook::InfiniteDoubleJump(bool enabled)
+{
+	if (enabled)
+	{
+		//Write FF 0f 8c to enable
+		_patch((BYTE*)(this->_baseAddress + 0x47E257), (BYTE*)"\xFF\x0F\x8C", 3);
+	}
+	else
+	{
+		//Write 02 0F 8D to disable
+		_patch((BYTE*)(this->_baseAddress + 0x47E257), (BYTE*)"\x02\x0f\x8D", 3);
+	}
+}
+
+void NieRHook::FreeCamera(bool enabled)
+{
+	//int value;
+	//if (enabled)
+	//{
+	//	//Enable freecam
+	//	value = 0x80000000;
+	//	writeMemory(0x141415B90, value);
+	//}
+	//else
+	//{
+	//	//Disable freecam
+	//	value = 0;
+	//	writeMemory(0x141415B90, value);
+	//}
+}
+
+void NieRHook::InfiniteItemUsage(bool enabled)
+{
+	if (enabled) {
+		_patch((BYTE*)(this->_baseAddress + 0x7C9D82), (BYTE*)"\x90\x90\x90", 3);
+	}
+	else {
+		_patch((BYTE*)(this->_baseAddress + 0x7C9D82), (BYTE*)"\x89\x70\x08", 3);
+	}
+}
+
 /*
 	Add item to inventory
 	If Item is not in the inventory, Creates a new Item on memory
@@ -419,53 +484,6 @@ bool NieRHook::removeWeapon(int ID)
 	return false;
 }
 
-void NieRHook::NoCLip(bool enabled)
-{
-	//if (enabled)
-	//{ //Enable noclip
-	//	//Set memory at offsets 0x1354B1 & 0x135758 = 90 90 90 90
-	//	_patch((BYTE*)(this->_baseAddress + 0x1354B1), (BYTE*)"\x90\x90\x90\x90", 4);
-	//	_patch((BYTE*)(this->_baseAddress + 0x135758), (BYTE*)"\x90\x90\x90\x90", 4);
-	//}
-	//else
-	//{ //Disable noclip
-	//	//Set memory at offsets 0x1354B1 & 0x135758 = previous values
-	//	_patch((BYTE*)(this->_baseAddress + 0x1354B1), (BYTE*)"\x0F\x29\x42\x50", 4);
-	//	_patch((BYTE*)(this->_baseAddress + 0x135758), (BYTE*)"\x0F\x29\x43\x50", 4);
-	//}
-}
-
-void NieRHook::InfiniteDoubleJump(bool enabled)
-{
-	if (enabled)
-	{
-		//Write FF 0f 8c to enable
-		_patch((BYTE*)(this->_baseAddress + 0x47E257), (BYTE*)"\xFF\x0F\x8C", 3);
-	}
-	else
-	{
-		//Write 02 0F 8D to disable
-		_patch((BYTE*)(this->_baseAddress + 0x47E257), (BYTE*)"\x02\x0f\x8D", 3);
-	}
-}
-
-void NieRHook::FreeCamera(bool enabled)
-{
-	//int value;
-	//if (enabled)
-	//{
-	//	//Enable freecam
-	//	value = 0x80000000;
-	//	writeMemory(0x141415B90, value);
-	//}
-	//else
-	//{
-	//	//Disable freecam
-	//	value = 0;
-	//	writeMemory(0x141415B90, value);
-	//}
-}
-
 NieRHook::NieRHook()
 {
 	this->_hooked = false;
@@ -554,6 +572,16 @@ void NieRHook::setVoiceVolume(int value)
 	writeMemory(this->_baseAddress + _offsets.VoiceVolume, value);
 }
 
+void NieRHook::setAudioOutput(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.AudioOutput, value);
+}
+
+void NieRHook::setVoiceChanger(int value)
+{
+	writeMemory(this->_baseAddress + _offsets.VoiceChanger, value);
+}
+
 void NieRHook::setHorizontalRotationSpeed(int value)
 {
 	writeMemory(this->_baseAddress + _offsets.HorizontalRotationSpeed, value);
@@ -602,4 +630,88 @@ void NieRHook::setPursuitSpeed(int value)
 void NieRHook::setLockedEnemyTracking(int value)
 {
 	writeMemory(this->_baseAddress + _offsets.LockedEnemyTracking, value);
+}
+
+int NieRHook::getMusicVolume()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.MusicVolume);
+}
+
+int NieRHook::getSoundEffectVolume()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.SoundEffectVolume);
+}
+int NieRHook::getVoiceVolume()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.VoiceVolume);
+}
+
+int NieRHook::getAudioOutput()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.AudioOutput);
+}
+
+int NieRHook::getVoiceChanger()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.VoiceChanger);
+}
+
+int NieRHook::getBrightness()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.ScreenBrightness);
+}
+
+int NieRHook::getDistance()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.Distance);
+}
+
+int NieRHook::getCombatDistance()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.CombatDistance);
+}
+
+int NieRHook::getVerticalRotationSpeed()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.VerticalRotationSpeed);
+}
+
+int NieRHook::getHorizontalRotationSpeed()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.HorizontalRotationSpeed);
+}
+
+int NieRHook::getHorizontalAutoAdjust()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.HorizontalAutoAdjust);
+}
+
+int NieRHook::getVerticalAutoAdjust()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.VerticalAutoAdjust);
+}
+
+int NieRHook::getFreeEnemyTracking()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.FreeEnemyTracking);
+}
+
+int NieRHook::getZoomSpeed()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.ZoomSpeed);
+}
+
+int NieRHook::getPursuitSpeed()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.PursuitSpeed);
+}
+
+int NieRHook::getLockedEnemyTracking()
+{
+	return readMemory<int>(this->_baseAddress + this->_offsets.LockedEnemyTracking);
+}
+
+float NieRHook::getHUDOpacity()
+{
+	return readMemory<float>(this->_baseAddress + this->_offsets.HUDOpacity);
 }
