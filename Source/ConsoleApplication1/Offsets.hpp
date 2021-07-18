@@ -12,6 +12,7 @@ struct offsets {
 	uintptr_t z;
 	uintptr_t level;
 	uintptr_t exp;
+	uintptr_t funds;
 
 	//Items
 	uintptr_t items_first;

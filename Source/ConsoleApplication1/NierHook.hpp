@@ -61,6 +61,7 @@ public:
 	void setZ(float Z);
 	void setPosition(float X, float Y, float Z);
 	void setHealth(int health);
+	void setFunds(int funds);
 
 	//Cheats
 	void NoCLip(bool enabled);

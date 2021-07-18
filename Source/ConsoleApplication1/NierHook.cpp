@@ -24,6 +24,7 @@ void NieRHook::_hook(void)
 		this->_offsets.z = 0x58;
 		this->_offsets.level = 0x14BC;
 		this->_offsets.exp = 0xFC6060;
+		this->_offsets.funds = 0xFC6064;
 
 		this->_offsets.items_first = 0x148C4C4;
 		this->_offsets.items_last = 0x148CE18;
@@ -61,6 +62,7 @@ void NieRHook::_hook(void)
 		this->_offsets.z = 0x58;
 		this->_offsets.level = 0x14BC;
 		this->_offsets.exp = 0x1984670;
+		this->_offsets.funds = 0x1984674;
 
 		this->_offsets.items_first = 0x197C4C4;
 		this->_offsets.items_last = 0x197CE18;
@@ -188,6 +190,7 @@ void NieRHook::update(void)
 	this->Zpos = readMemory<float>(this->_entityAddress + this->_offsets.z);
 	this->Level = readMemory<int>(this->_entityAddress + this->_offsets.level);
 	this->EXP = readMemory<int>(this->_baseAddress + this->_offsets.exp);
+	this->Funds = readMemory<int>(this->_baseAddress + this->_offsets.funds);
 }
 
 float NieRHook::getXPosition(void)
@@ -254,6 +257,11 @@ void NieRHook::setHealth(int health)
 {
 	//Write Memory at offset 0x858 to set current health
 	this->writeMemory(this->_entityAddress + this->_offsets.health, health);
+}
+
+void NieRHook::setFunds(int funds)
+{
+	writeMemory(this->_baseAddress + this->_offsets.funds, funds);
 }
 
 void NieRHook::setGameSpeed(float speed)
