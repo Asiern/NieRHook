@@ -50,6 +50,12 @@ void NieRHook::_hook(void)
 		this->_offsets.LockedEnemyTracking = 0x1495714;
 
 		this->_offsets.InfiniteDoubleJump = 0x47E257;
+		this->_offsets.InfiniteAirDash = 0x47E391;
+		this->_offsets.InfiniteAirDashArray = (BYTE*)"\xC7\x83\x98\x0A\x01\x00\x01\x00\x00\x00";
+		this->_offsets.InfiniteItemUsage = 0x7C9D82;
+		this->_offsets.InfiniteItemUsageArray = (BYTE*)"\x89\x70\x08";
+
+
 	}
 	else {
 		//Define Offsets Steam OLD
@@ -88,6 +94,11 @@ void NieRHook::_hook(void)
 		this->_offsets.LockedEnemyTracking = 0x1985714;
 
 		this->_offsets.InfiniteDoubleJump = 0x1E2D4C;
+		this->_offsets.InfiniteAirDash = 0x1E2E5D;
+		this->_offsets.InfiniteAirDashArray = (BYTE*)"\xC7\x83\x88\x0A\x01\x00\x01\x00\x00\x00";
+		//TODO
+		this->_offsets.InfiniteItemUsage = 0x0;
+		this->_offsets.InfiniteItemUsageArray = (BYTE*)"\x90\x90\x90";
 	}
 
 	this->_hooked = true;
@@ -255,7 +266,6 @@ void NieRHook::setPosition(float X, float Y, float Z)
 
 void NieRHook::setHealth(int health)
 {
-	//Write Memory at offset 0x858 to set current health
 	this->writeMemory(this->_entityAddress + this->_offsets.health, health);
 }
 
@@ -286,16 +296,11 @@ void NieRHook::NoCooldown(bool enabled)
 
 void NieRHook::InfiniteAirDash(bool enabled)
 {
-	if (enabled)
-	{ //Enable Inf Air Dash
-		//Set memory at offset 0x1E2E5D = 90 90 90 90 90 90 90 90 90 90
-		_patch((BYTE*)(this->_baseAddress + 0x47E391), (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
+	if (enabled) {
+		_patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteAirDash), (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
 	}
-	else
-	{ //Disable Inf Air Dash
-		//Set memory at offset 0x1E2E5D = previous values
-		//_patch((BYTE*)(this->_baseAddress + 0x47E391), (BYTE*)"\xC7\x83\x88\x0A\x01\x00\x01\x00\x00\x00", 10);
-		_patch((BYTE*)(this->_baseAddress + 0x47E391), (BYTE*)"\xC7\x83\x98\x0A\x01\x00\x01\x00\x00\x00", 10);
+	else {
+		_patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteAirDash), this->_offsets.InfiniteAirDashArray, 10);
 	}
 }
 
@@ -335,15 +340,11 @@ void NieRHook::NoCLip(bool enabled)
 
 void NieRHook::InfiniteDoubleJump(bool enabled)
 {
-	if (enabled)
-	{
-		//Write FF 0f 8c to enable
-		_patch((BYTE*)(this->_baseAddress + 0x47E257), (BYTE*)"\xFF\x0F\x8C", 3);
+	if (enabled) {
+		_patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteDoubleJump), (BYTE*)"\xFF\x0F\x8C", 3);
 	}
-	else
-	{
-		//Write 02 0F 8D to disable
-		_patch((BYTE*)(this->_baseAddress + 0x47E257), (BYTE*)"\x02\x0f\x8D", 3);
+	else {
+		_patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteDoubleJump), (BYTE*)"\x02\x0f\x8D", 3);
 	}
 }
 
@@ -367,10 +368,10 @@ void NieRHook::FreeCamera(bool enabled)
 void NieRHook::InfiniteItemUsage(bool enabled)
 {
 	if (enabled) {
-		_patch((BYTE*)(this->_baseAddress + 0x7C9D82), (BYTE*)"\x90\x90\x90", 3);
+		_patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteItemUsage), (BYTE*)"\x90\x90\x90", 3);
 	}
 	else {
-		_patch((BYTE*)(this->_baseAddress + 0x7C9D82), (BYTE*)"\x89\x70\x08", 3);
+		_patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteItemUsage), this->_offsets.InfiniteItemUsageArray, 3);
 	}
 }
 

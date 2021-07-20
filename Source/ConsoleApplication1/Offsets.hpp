@@ -51,8 +51,10 @@ struct offsets {
 	uintptr_t GameSpeed;
 	uintptr_t NoCooldown;
 	uintptr_t InfiniteAirDash;
+	BYTE* InfiniteAirDashArray;
 	uintptr_t WeaponMaterials;
 	uintptr_t PodMaterials;
 	uintptr_t FreeCamera;
-
+	uintptr_t InfiniteItemUsage;
+	BYTE* InfiniteItemUsageArray;
 };
