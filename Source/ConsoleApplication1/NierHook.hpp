@@ -47,7 +47,7 @@ public:
 	void stop(void);  //Reset hook
 	bool isHooked(void);
 	void hookStatus(void);
-	void Ver();
+	int getVersion(void);
 
 	DWORD getProcessID(void); //Returns process id
 
