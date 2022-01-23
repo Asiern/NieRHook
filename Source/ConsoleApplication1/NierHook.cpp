@@ -517,14 +517,11 @@ char* NieRHook::readMemoryString(uintptr_t address, int size)
 void NieRHook::getGameVersion()
 {
 	char* version = readMemoryString(this->_baseAddress + 0x1422130, 14);
-	if (strcmp(version, "version v0.0.1") == 0) {
-		this->version = VER_0_0_1;
-	}
-	else if (strcmp(version, "version v0.0.2") == 0) {
+	if (strcmp(version, "version v0.0.2") == 0) {
 		this->version = VER_0_0_2;
 	}
 	else {
-		this->version = 0;
+		this->version = 1;
 	}
 	free(version);
 }
