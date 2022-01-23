@@ -1,9 +1,17 @@
 #include <Windows.h>
 #pragma once
 
+typedef struct {
+	int size;
+	uintptr_t offset;
+	BYTE* enabled;
+	BYTE* disabled;
+}cheat;
+
 struct offsets {
 	//Game
 	uintptr_t version;
+	uintptr_t GameSpeed;
 
 	//Player
 	uintptr_t entity;
@@ -47,16 +55,13 @@ struct offsets {
 	uintptr_t B;
 
 	//Cheats
-	uintptr_t NoClipX;
-	uintptr_t NoClipY;
-	uintptr_t InfiniteDoubleJump;
-	uintptr_t GameSpeed;
-	uintptr_t NoCooldown;
-	uintptr_t InfiniteAirDash;
-	BYTE* InfiniteAirDashArray;
-	uintptr_t WeaponMaterials;
-	uintptr_t PodMaterials;
-	uintptr_t FreeCamera;
-	uintptr_t InfiniteItemUsage;
-	BYTE* InfiniteItemUsageArray;
+	cheat NoClipX;
+	cheat NoClipY;
+	cheat InfiniteDoubleJump;
+	cheat NoCooldown;
+	cheat InfiniteAirDash;
+	cheat WeaponMaterials;
+	cheat PodMaterials;
+	cheat FreeCamera;
+	cheat InfiniteItemUsage;
 };
