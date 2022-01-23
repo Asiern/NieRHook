@@ -1,6 +1,10 @@
-#include "Offsets.hpp"
 #ifndef NIERHOOK_H
 #define NIERHOOK_H
+#include "Offsets.hpp"
+
+#define VER_0_0_1 001
+#define VER_0_0_2 002
+
 class NieRHook;
 class NieRHook
 {
@@ -21,6 +25,7 @@ private:
 	float Zpos;
 	int Funds;
 	int EXP;
+	int version;
 
 	//Methods
 	void _hook(void);
@@ -32,6 +37,8 @@ private:
 	T readMemory(uintptr_t address);
 	template <typename T>
 	void writeMemory(uintptr_t address, T value);
+	char* readMemoryString(uintptr_t address, int size);
+	void getGameVersion();
 
 public:
 	NieRHook();
@@ -40,6 +47,7 @@ public:
 	void stop(void);  //Reset hook
 	bool isHooked(void);
 	void hookStatus(void);
+	void Ver();
 
 	DWORD getProcessID(void); //Returns process id
 

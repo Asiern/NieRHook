@@ -13,7 +13,12 @@ void NieRHook::_hook(void)
 	this->_pID = ID;
 	this->_baseAddress = this->_getModuleBaseAddress(ID, L"NieRAutomata.exe");
 
-	if (true) {
+	this->getGameVersion();
+	if (this->version == 0)
+		return;
+
+	switch (this->version) {
+	case VER_0_0_2:
 		//Define offsets UWP
 		this->_offsets = {};
 		this->_offsets.entity = 0x1020948;
@@ -54,10 +59,9 @@ void NieRHook::_hook(void)
 		this->_offsets.InfiniteAirDashArray = (BYTE*)"\xC7\x83\x98\x0A\x01\x00\x01\x00\x00\x00";
 		this->_offsets.InfiniteItemUsage = 0x7C9D82;
 		this->_offsets.InfiniteItemUsageArray = (BYTE*)"\x89\x70\x08";
+		break;
 
-
-	}
-	else {
+	case VER_0_0_1:
 		//Define Offsets Steam OLD
 		this->_offsets = {};
 		this->_offsets.entity = 0x16053B8;
@@ -99,6 +103,7 @@ void NieRHook::_hook(void)
 		//TODO
 		this->_offsets.InfiniteItemUsage = 0x0;
 		this->_offsets.InfiniteItemUsageArray = (BYTE*)"\x90\x90\x90";
+		break;
 	}
 
 	this->_hooked = true;
@@ -107,6 +112,7 @@ void NieRHook::_hook(void)
 void NieRHook::_unHook(void)
 {
 	this->_hooked = false;
+	this->version = 0;
 	this->_baseAddress = 0;
 	this->_entityAddress = 0;
 	this->_pID = 0;
@@ -188,6 +194,11 @@ void NieRHook::hookStatus(void)
 	{
 		this->_unHook();
 	}
+}
+
+void NieRHook::Ver()
+{
+	this->getGameVersion();
 }
 
 //Update Player Attributes
@@ -493,6 +504,31 @@ bool NieRHook::removeWeapon(int ID)
 	return false;
 }
 
+char* NieRHook::readMemoryString(uintptr_t address, int size)
+{
+	char* val = (char*)calloc(sizeof(char) * size, size);
+	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
+	ReadProcessMemory(pHandle, (LPCVOID)address, val, size, NULL);
+	CloseHandle(pHandle); //Close handle to prevent memory leaks
+	return val;
+
+}
+
+void NieRHook::getGameVersion()
+{
+	char* version = readMemoryString(this->_baseAddress + 0x1422130, 14);
+	if (strcmp(version, "version v0.0.1") == 0) {
+		this->version = VER_0_0_1;
+	}
+	else if (strcmp(version, "version v0.0.2") == 0) {
+		this->version = VER_0_0_2;
+	}
+	else {
+		this->version = 0;
+	}
+	free(version);
+}
+
 NieRHook::NieRHook()
 {
 	this->_hooked = false;
@@ -508,6 +544,7 @@ NieRHook::NieRHook()
 	this->Funds = 0;
 	this->Level = 0;
 	this->_offsets = {};
+	this->version = 0;
 }
 
 NieRHook::~NieRHook()

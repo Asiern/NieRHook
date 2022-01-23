@@ -2,6 +2,8 @@
 #pragma once
 
 struct offsets {
+	//Game
+	uintptr_t version;
 
 	//Player
 	uintptr_t entity;
