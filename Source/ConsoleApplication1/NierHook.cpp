@@ -196,9 +196,9 @@ void NieRHook::hookStatus(void)
 	}
 }
 
-void NieRHook::Ver()
+int NieRHook::getVersion()
 {
-	this->getGameVersion();
+	return this->version;
 }
 
 //Update Player Attributes
