@@ -385,10 +385,9 @@ void NieRHook::getGameVersion()
 	{
 		res = readMemoryString(0x146557790 + (i * 2), 1);
 		version[i] = *res;
+		free(res);
 	}
 	version2[7] = '\0';
-	free(res);
-	std::cout << version2 << std::endl;
 	if (strcmp(version, "1.0.0.0") == 0)
 	{
 		this->version = VER_0_0_1;
