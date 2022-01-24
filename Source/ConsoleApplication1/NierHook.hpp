@@ -9,14 +9,14 @@ class NieRHook;
 class NieRHook
 {
 private:
-	//Attributes
+	// Attributes
 	DWORD _pID;
 	uintptr_t _baseAddress;
 	uintptr_t _entityAddress;
 	bool _hooked;
 	offsets _offsets;
 
-	//Player Attributes
+	// Player Attributes
 	int Level;
 	int Health;
 	int MaxHealth;
@@ -27,33 +27,31 @@ private:
 	int EXP;
 	int version;
 
-	//Methods
-	void _hook(void);
-	void _unHook(void);
+	// Methods
 	DWORD _getProcessID(void);
-	uintptr_t _getModuleBaseAddress(DWORD procId, const wchar_t* modName);
-	void _patch(BYTE* destination, BYTE* src, unsigned int size);
+	uintptr_t _getModuleBaseAddress(DWORD procId, const wchar_t *modName);
+	void _patch(BYTE *destination, BYTE *src, unsigned int size);
 	template <typename T>
 	T readMemory(uintptr_t address);
 	template <typename T>
 	void writeMemory(uintptr_t address, T value);
-	char* readMemoryString(uintptr_t address, int size);
+	char *readMemoryString(uintptr_t address, int size);
 	void getGameVersion();
 
 public:
 	NieRHook();
 	~NieRHook();
-	void start(void); //Start hook
-	void stop(void);  //Reset hook
+	void start(void); // Start hook
+	void stop(void);  // Reset hook
 	bool isHooked(void);
 	void hookStatus(void);
 	int getVersion(void);
 
-	DWORD getProcessID(void); //Returns process id
+	DWORD getProcessID(void); // Returns process id
 
-	void update(void); //Update Player Attributes
+	void update(void); // Update Player Attributes
 
-	//Getters
+	// Getters
 	int getLevel(void);
 	int getHealth(void);
 	int getMaxHealth(void);
@@ -63,7 +61,7 @@ public:
 	float getYPosition(void);
 	float getZPosition(void);
 
-	//Setters
+	// Setters
 	void setX(float X);
 	void setY(float Y);
 	void setZ(float Z);
@@ -71,7 +69,7 @@ public:
 	void setHealth(int health);
 	void setFunds(int funds);
 
-	//Cheats
+	// Cheats
 	void NoCLip(bool enabled);
 	void InfiniteDoubleJump(bool enabled);
 	void setGameSpeed(float speed);
@@ -81,13 +79,13 @@ public:
 	void FreeCamera(bool enabled);
 	void InfiniteItemUsage(bool enabled);
 
-	//Inventory
+	// Inventory
 	bool addItem(int ID, int number);
 	bool removeItem(int ID);
 	bool addWeapon(int ID, int level);
 	bool removeWeapon(int ID);
 
-	//Misc
+	// Misc
 	void setMusicVolume(int value);
 	void setSoundEffectVolume(int value);
 	void setVoiceVolume(int value);
@@ -106,7 +104,6 @@ public:
 	void setLockedEnemyTracking(int value);
 	void setHUDOpacity(float opacity);
 	void setColor(float R, float G, float B);
-
 	int getMusicVolume();
 	int getSoundEffectVolume();
 	int getVoiceVolume();
@@ -126,17 +123,17 @@ public:
 	float getHUDOpacity();
 };
 
-template<typename T>
+template <typename T>
 inline T NieRHook::readMemory(uintptr_t address)
 {
 	T value;
 	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
 	ReadProcessMemory(pHandle, (LPCVOID)(address), &value, sizeof(value), NULL);
-	CloseHandle(pHandle); //Close handle to prevent memory leaks
+	CloseHandle(pHandle);
 	return value;
 }
 
-template<typename T>
+template <typename T>
 inline void NieRHook::writeMemory(uintptr_t address, T value)
 {
 	HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
