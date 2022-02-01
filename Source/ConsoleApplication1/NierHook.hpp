@@ -1,6 +1,7 @@
 #ifndef NIERHOOK_H
 #define NIERHOOK_H
 #include "Offsets.hpp"
+#include <string>
 
 #define VER_0_0_1 001
 #define VER_0_0_2 002
@@ -44,6 +45,7 @@ class NieRHook
     bool isHooked(void);
     void hookStatus(void);
     int getVersion(void);
+    bool isSavefileLoaded(void);
 
     DWORD getProcessID(void); // Returns process id
 
@@ -58,6 +60,7 @@ class NieRHook
     float getXPosition(void);
     float getYPosition(void);
     float getZPosition(void);
+    std::string getLoadedSaveName(void);
 
     // Setters
     void setX(float X);

@@ -68,6 +68,15 @@ int NieRHook::getVersion()
     return this->version;
 }
 
+bool NieRHook::isSavefileLoaded(void)
+{
+    char* loaded = (char*)readMemoryString(this->_baseAddress + this->_offsets.savefiles.loaded,
+                                           this->_offsets.savefiles.nameSize);
+    bool result = strcmp(loaded, "") != 0;
+    free(loaded);
+    return result;
+}
+
 // Update Player Attributes
 void NieRHook::update(void)
 {
@@ -95,6 +104,14 @@ float NieRHook::getYPosition(void)
 float NieRHook::getZPosition(void)
 {
     return this->Zpos;
+}
+
+std::string NieRHook::getLoadedSaveName(void)
+{
+    char* value = readMemoryString(this->_offsets.savefiles.loaded, this->_offsets.savefiles.nameSize);
+    std::string name = std::string(value, this->_offsets.savefiles.nameSize);
+    free(value);
+    return name;
 }
 
 int NieRHook::getFunds(void)
@@ -455,12 +472,18 @@ void NieRHook::start(void)
     switch (this->version)
     {
     case VER_0_0_2:
-        // Define offsets UWP
         this->_offsets = {};
 
         // Game
         this->_offsets.GameSpeed;
         this->_offsets.version = 0x1422130;
+
+        // SaveFiles
+        this->_offsets.savefiles.loaded = 0x13EADB0;
+        this->_offsets.savefiles.slot1 = 0x145BAA8;
+        this->_offsets.savefiles.slot2 = 0x145BB08;
+        this->_offsets.savefiles.slot3 = 0x145BB68;
+        this->_offsets.savefiles.nameSize = 16;
 
         // Player
         this->_offsets.entity = 0x1020948;
@@ -500,20 +523,20 @@ void NieRHook::start(void)
         this->_offsets.LockedEnemyTracking = 0x1495714;
 
         // Cheats
-        // this->_offsets.NoClipX;
-        // this->_offsets.NoClipY;
+        // TODO this->_offsets.NoClipX;
+        // TODO this->_offsets.NoClipY;
         this->_offsets.InfiniteDoubleJump.offset = 0x47E257;
         this->_offsets.InfiniteDoubleJump.enabled = (BYTE*)"\xFF\x0F\x8C";
         this->_offsets.InfiniteDoubleJump.disabled = (BYTE*)"\x02\x0f\x8D";
         this->_offsets.InfiniteDoubleJump.size = 3;
-        // this->_offsets.NoCooldown;
+        // TODO this->_offsets.NoCooldown;
         this->_offsets.InfiniteAirDash.offset = 0x47E391;
         this->_offsets.InfiniteAirDash.enabled = (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90";
         this->_offsets.InfiniteAirDash.disabled = (BYTE*)"\xC7\x83\x98\x0A\x01\x00\x01\x00\x00\x00";
         this->_offsets.InfiniteAirDash.size = 10;
-        // this->_offsets.WeaponMaterials;
-        // this->_offsets.PodMaterials;
-        // this->_offsets.FreeCamera;
+        // TODO this->_offsets.WeaponMaterials;
+        // TODO this->_offsets.PodMaterials;
+        // TODO this->_offsets.FreeCamera;
         this->_offsets.InfiniteItemUsage.offset = 0x7C9D82;
         this->_offsets.InfiniteItemUsage.enabled = (BYTE*)"\x90\x90\x90";
         this->_offsets.InfiniteItemUsage.disabled = (BYTE*)"\x89\x70\x08";
@@ -521,12 +544,18 @@ void NieRHook::start(void)
         break;
 
     case VER_0_0_1:
-        // Define Offsets Steam OLD
         this->_offsets = {};
 
         // Game
         this->_offsets.GameSpeed = 0x160E6D8;
         this->_offsets.version;
+
+        // SaveFiles
+        this->_offsets.savefiles.loaded = 0x18E9E00;
+        this->_offsets.savefiles.slot1 = 0x194BAA8;
+        this->_offsets.savefiles.slot2 = 0x194BB08;
+        this->_offsets.savefiles.slot3 = 0x194BB68;
+        this->_offsets.savefiles.nameSize = 16;
 
         // Player
         this->_offsets.entity = 0x16053B8;
@@ -594,7 +623,7 @@ void NieRHook::start(void)
         this->_offsets.PodMaterials.enabled = (BYTE*)"\x90\x90\x90";
         this->_offsets.PodMaterials.disabled = (BYTE*)"\x83\xFB\xFF";
         this->_offsets.PodMaterials.size = 3;
-        // this->_offsets.FreeCamera;
+        // TODO this->_offsets.FreeCamera;
         this->_offsets.InfiniteItemUsage.offset = 0x7C9D82;
         this->_offsets.InfiniteItemUsage.enabled = (BYTE*)"\x90\x90\x90";
         this->_offsets.InfiniteItemUsage.disabled = (BYTE*)"\x89\x70\x08";

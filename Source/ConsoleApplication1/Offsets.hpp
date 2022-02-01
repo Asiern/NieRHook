@@ -9,11 +9,21 @@ typedef struct
     BYTE* disabled;
 } cheat;
 
+typedef struct
+{
+    uintptr_t loaded;
+    uintptr_t slot1;
+    uintptr_t slot2;
+    uintptr_t slot3;
+    int nameSize;
+} saves;
+
 struct offsets
 {
     // Game
     uintptr_t version;
     uintptr_t GameSpeed;
+    saves savefiles;
 
     // Player
     uintptr_t entity;
