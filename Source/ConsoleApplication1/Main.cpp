@@ -59,6 +59,22 @@ int main()
     // Print some values
     while (hook.isHooked())
     {
+        switch (hook.getVersion())
+        {
+        case VER_0_0_1:
+            std::cout << "version 0.0.1" << std::endl;
+            break;
+        case VER_0_0_2:
+            std::cout << "version 0.0.2" << std::endl;
+            break;
+        default:
+            break;
+        }
+        if (hook.isSavefileLoaded())
+            std::cout << "Loaded Savefile: " << hook.getLoadedSaveName() << std::endl;
+        else
+            std::cout << "Loaded Savefile: NONE" << std::endl;
+
         hook.update(); // update hook internal values (Position, Health, Level...)
         std::cout << "X: " << hook.getXPosition() << "  Y: " << hook.getYPosition() << "  Z: " << hook.getYPosition()
                   << std::endl;

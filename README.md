@@ -95,6 +95,7 @@ You can find all the used IDs and offsets [here](https://docs.google.com/spreads
 - `Start` - attach the hook to `NieRAutomata.exe` process
 - `Stop` - detach the hook from process
 - `isHooked` - return true if hooked
+- `isSaveLoaded` - returns true if a savefile is loaded, otherwise false
 - `hookStatus` - ensures the status of the hook, if processID changes stops the hook
 - `getProcessID` - returns process ID
 - `update` - refresh hook & attributes
@@ -106,6 +107,7 @@ You can find all the used IDs and offsets [here](https://docs.google.com/spreads
 - `getXPosition` - returns player's X position
 - `getYPosition` - returns player's Y position
 - `getZPosition` - returns player's Z position
+- `getLoadedSaveName` - returns the name of the loaded savefile
 - `setPosition` - sets the position of the player
 - `setHealth` - sets player health
 - `NoClip` - enables or disables No Clip
