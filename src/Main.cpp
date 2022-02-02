@@ -86,5 +86,5 @@ int main()
 
     // Join thread and exit
     exitThread.join();
-    return (0);
+    return 0;
 }
