@@ -2,11 +2,13 @@
 
 A C++ library to attach to the NieR:Automata process and read/write memory.
 
+[NieRHook Demo](#nierhook-demo) <br>
 [Using NieRHook](#using-nierhook) <br>
+[Build NieRHook](#build-nierhook) <br>
 [Memory Reference](#memory-reference)<br>
 [NieRHook Reference](#nierhook-reference)
 
-## Using NieRHook
+## NieRHook Demo
 
 ```
 #include <Windows.h>
@@ -79,6 +81,18 @@ int main()
 	return (0);
 }
 ```
+
+---
+
+## Using NieRHook
+
+### CMake Projects
+
+### Other projects
+
+---
+
+## Build NieRHook
 
 ---
 

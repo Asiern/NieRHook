@@ -1,6 +1,7 @@
 #include "NierHook.hpp"
-#include <TlHelp32.h>
 #include <Windows.h>
+
+#include <TlHelp32.h>
 #include <iostream>
 
 // Search for window named "NieR:Automata" returns: process ID
@@ -26,9 +27,9 @@ uintptr_t NieRHook::_getModuleBaseAddress(DWORD procId, const wchar_t* modName)
     HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, procId);
     if (hSnap != INVALID_HANDLE_VALUE)
     {
-        MODULEENTRY32 modEntry;
+        MODULEENTRY32W modEntry;
         modEntry.dwSize = sizeof(modEntry);
-        if (Module32First(hSnap, &modEntry))
+        if (Module32FirstW(hSnap, &modEntry))
         {
             do
             {
@@ -37,7 +38,7 @@ uintptr_t NieRHook::_getModuleBaseAddress(DWORD procId, const wchar_t* modName)
                     modBaseAddr = (uintptr_t)modEntry.modBaseAddr;
                     break;
                 }
-            } while (Module32Next(hSnap, &modEntry));
+            } while (Module32NextW(hSnap, &modEntry));
         }
     }
     CloseHandle(hSnap); // Close handle to prevent memory leaks
@@ -308,6 +309,7 @@ bool NieRHook::addItem(int ID, int number)
     // Item not found on memory, create on empty slot
     writeMemory(emptySlot, ID);         // Set ID
     writeMemory(Address + 0x8, number); // Set level
+    return true;
 }
 
 bool NieRHook::removeItem(int ID)
@@ -477,7 +479,6 @@ void NieRHook::start(void)
         // Game
         this->_offsets.GameSpeed;
         this->_offsets.version = 0x1422130;
-        this->_offsets.savefile = 0x14220E8;
 
         // SaveFiles
         this->_offsets.savefiles.loaded = 0x13EADB0;
@@ -550,7 +551,6 @@ void NieRHook::start(void)
         // Game
         this->_offsets.GameSpeed = 0x160E6D8;
         this->_offsets.version = 0x6557790;
-        this->_offsets.savefile = 0x14220E8;
 
         // SaveFiles
         this->_offsets.savefiles.loaded = 0x18E9E00;
