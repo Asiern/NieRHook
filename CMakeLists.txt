@@ -25,6 +25,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE src)
 
 # Configure Demo
 set(DEMO_SOURCES src/Main.cpp)
-add_executable(${PROJECT_NAME}_DEMO WIN32 ${DEMO_SOURCES})
+add_executable(${PROJECT_NAME}_DEMO ${DEMO_SOURCES})
 target_include_directories(${PROJECT_NAME}_DEMO PRIVATE include)
 target_link_libraries(${PROJECT_NAME}_DEMO ${PROJECT_NAME})
