@@ -2,7 +2,6 @@
 #include <Windows.h>
 
 #include <TlHelp32.h>
-#include <iostream>
 
 // Search for window named "NieR:Automata" returns: process ID
 DWORD NieRHook::_getProcessID(void)
@@ -405,7 +404,7 @@ char* NieRHook::readMemoryString(uintptr_t address, int size)
 void NieRHook::getGameVersion()
 {
     // Check for v0.0.2
-    char* version = readMemoryString(this->_baseAddress + this->_offsets.version, 14);
+    char* version = readMemoryString(this->_baseAddress + 0x1422130, 14);
     if (strcmp(version, "version v0.0.2") == 0)
     {
         this->version = VER_0_0_2;
@@ -418,7 +417,7 @@ void NieRHook::getGameVersion()
     char* res;
     for (int i = 0; i < 7; i++)
     {
-        res = readMemoryString(this->_baseAddress + this->_offsets.version + (i * 2), 1);
+        res = readMemoryString(this->_baseAddress + 0x6557790 + (i * 2), 1);
         version[i] = *res;
         free(res);
     }
