@@ -140,4 +140,4 @@ template <typename T> inline void NieRHook::writeMemory(uintptr_t address, T val
     CloseHandle(pHandle);
 }
 
-#endif
+#endif;
