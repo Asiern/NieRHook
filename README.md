@@ -88,6 +88,17 @@ int main()
 
 ### CMake Projects
 
+CMakeLists.txt
+```
+add_subdirectory(lib/NieRHook)
+target_link_libraries(${PROJECT_NAME} NieRHook)
+target_include_directories(${PROJECT_NAME} PUBLIC /lib/NieRHook/include)
+```
+
+If you make use of winsock2.h, you need to add the following definition into your CMakeLists.txt
+
+`add_definitions(-DUSING_WINSOCK2)`
+
 ### Other projects
 
 ---
