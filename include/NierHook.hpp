@@ -1,6 +1,13 @@
 #ifndef NIERHOOK_H
 #define NIERHOOK_H
 #include "Offsets.hpp"
+#ifdef USING_WINSOCK2
+#include <WinSock2.h>
+#else
+#include <Windows.h>
+#endif;
+
+#include <TlHelp32.h>
 #include <string>
 
 #define VER_0_0_1 001

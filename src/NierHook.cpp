@@ -1,7 +1,4 @@
 #include "NierHook.hpp"
-#include <Windows.h>
-
-#include <TlHelp32.h>
 
 // Search for window named "NieR:Automata" returns: process ID
 DWORD NieRHook::_getProcessID(void)

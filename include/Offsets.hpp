@@ -1,5 +1,11 @@
+#ifndef _OFFSETS_H
+#define _OFFSETS_H
+
+#ifdef USING_WINSOCK2
+#include <WinSock2.h>
+#else
 #include <Windows.h>
-#pragma once
+#endif;
 
 typedef struct
 {
@@ -77,3 +83,5 @@ struct offsets
     cheat FreeCamera;
     cheat InfiniteItemUsage;
 };
+
+#endif;
