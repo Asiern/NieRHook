@@ -4,6 +4,9 @@ A C++ library to attach to the NieR:Automata process and read/write memory.
 
 [NieRHook Demo](#nierhook-demo) <br>
 [Using NieRHook](#using-nierhook) <br>
+&emsp;[CMake Projects](#cmake-projects) <br>
+&emsp;[Dinamyc Library (.dll)](#dinamyc-link-library) <br>
+&emsp;[Static Library](#static-library) <br>
 [Build NieRHook](#build-nierhook) <br>
 [Memory Reference](#memory-reference)<br>
 [NieRHook Reference](#nierhook-reference)
@@ -88,7 +91,11 @@ int main()
 
 ### CMake Projects
 
-CMakeLists.txt
+**Clone NieRHook**
+
+`git clone https://github.com/Asiern/NieRHook/`
+
+**Edit your CMakeLists.txt**
 ```
 add_subdirectory(lib/NieRHook)
 target_link_libraries(${PROJECT_NAME} NieRHook)
@@ -99,7 +106,20 @@ If you make use of winsock2.h, you need to add the following definition into you
 
 `add_definitions(-DUSING_WINSOCK2)`
 
-### Other projects
+```
+|--- Project/
+|       include/
+|       lib/
+|       |--- NieRHook/
+|       |    |   include/
+|       |    |   src/
+|       |    |   CMakeLists.txt
+|       src/
+|       CMakeLists.txt
+```
+### Dinamyc Link Library
+
+### Static Library
 
 ---
 
