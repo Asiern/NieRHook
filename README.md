@@ -130,11 +130,15 @@ If you make use of winsock2.h, you need to add the following definition into you
 
 ### Static Library (_Default_)
 
-set `-DNIERHOOK_STATIC_LIB=ON`
+set `"cmake.configureArgs": [
+        "-DNIERHOOK_STATIC_LIB=ON"
+    ],` at .vscode/setting.json
 
 ### Dinamyc Link Library
 
-set `-DNIERHOOK_STATIC_LIB=OFF`
+set `"cmake.configureArgs": [
+        "-DNIERHOOK_STATIC_LIB=OFF"
+    ],` at .vscode/setting.json
 
 ---
 
