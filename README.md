@@ -96,6 +96,7 @@ int main()
 `git clone https://github.com/Asiern/NieRHook/`
 
 **Edit your CMakeLists.txt**
+
 ```
 add_subdirectory(lib/NieRHook)
 target_link_libraries(${PROJECT_NAME} NieRHook)
@@ -117,13 +118,23 @@ If you make use of winsock2.h, you need to add the following definition into you
 |       src/
 |       CMakeLists.txt
 ```
-### Dinamyc Link Library
-
-### Static Library
 
 ---
 
 ## Build NieRHook
+
+**Requirements:**
+
+- CMake
+- Microsoft `Desktop development with C++` toolkit
+
+### Static Library _Default_
+
+set `-DNIERHOOK_STATIC_LIB=ON`
+
+### Dinamyc Link Library
+
+set `-DNIERHOOK_STATIC_LIB=OFF`
 
 ---
 
@@ -144,7 +155,28 @@ You can find all the used IDs and offsets [here](https://docs.google.com/spreads
 - `hookStatus` - ensures the status of the hook, if processID changes stops the hook
 - `getProcessID` - returns process ID
 - `update` - refresh hook & attributes
-- `getLevel` - return player's level
+
+**Items**
+
+- `addItem` - Adds a specific quantity of items to the inventory (See item IDs at [Memory Reference](#memory-reference))
+- `removeItem` -Removes item from memory (See item IDs at [Memory Reference](#memory-reference))
+- `addWeapon` - Adds a weapon to the inventory (See weapon IDs at [Memory Reference](#memory-reference))
+- `removeWeapon` - removes a weapon from the inventory (See weapon IDs at [Memory Reference](#memory-reference))
+
+**Cheats**
+
+- `NoClip` - enables or disables No Clip
+- `NoCooldown` - enables or disables No Cooldown
+- `InfiniteDoubleJump` - enables or disables Infinite Double Jump
+- `InfiniteAirDash` - enables or disables Infinite Air Dash
+- `IgnoreUpgradeMaterials` - enables or disables Ignore Upgrade Materials
+- `FreeCamera` - enables or disables free camera movement
+
+**Getters**
+
+- `isSavefileLoaded` - returns true if savefile is loaded
+- `getVersion` - retuns game version
+- `getLevel` - returns player's level
 - `getHealth` - returns player's health
 - `getMaxHealth` - returns player's max health
 - `getFunds` - returns player's Funds(G)
@@ -152,19 +184,45 @@ You can find all the used IDs and offsets [here](https://docs.google.com/spreads
 - `getXPosition` - returns player's X position
 - `getYPosition` - returns player's Y position
 - `getZPosition` - returns player's Z position
-- `getLoadedSaveName` - returns the name of the loaded savefile
+- `getMusicVolume` - returns music volume
+- `getSoundEffectVolume` - returns sound effect volume
+- `getVoiceVolume` - returns voice volume
+- `getAudioOutput` - returns audio output
+- `getVoiceChanger` - returns voice changer
+- `getBrightness` - returns brightness
+- `getDistance` - returns distance
+- `getCombatDistance` - returns combat distance
+- `getVerticalRotationSpeed` - returns vertical rotation speed
+- `getHorizontalRotationSpeed` - returns horizontal rotation speed
+- `getHorizontalAutoAdjust` - returns horizontal auto adjust
+- `getVerticalAutoAdjust` - returns vertical auto adjust
+- `getFreeEnemyTracking` - returns free enemy tracking
+- `getZoomSpeed` - returns zoom speed
+- `getPursuitSpeed` - returns pursuit speed
+- `getLockedEnemyTracking` - returns locked enemy tracking
+- `getHUDOpacity` - return HUD opacity
+
+**Setters**
+
 - `setPosition` - sets the position of the player
 - `setHealth` - sets player health
-- `NoClip` - enables or disables No Clip
-- `NoCooldown` - enables or disables No Cooldown
-- `InfiniteDoubleJump` - enables or disables Infinite Double Jump
-- `InfiniteAirDash` - enables or disables Infinite Air Dash
-- `IgnoreUpgradeMaterials` - enables or disables Ignore Upgrade Materials
-- `FreeCamera` - enables or disables free camera movement
 - `setGameSpeed` - sets game speed
-- `addItem` - Adds a specific quantity of items to the inventory (See item IDs at [Memory Reference](#memory-reference))
-- `removeItem` -Removes item from memory (See item IDs at [Memory Reference](#memory-reference))
-- `addWeapon` - Adds a weapon to the inventory (See weapon IDs at [Memory Reference](#memory-reference))
-- `removeWeapon` - removes a weapon from the inventory (See weapon IDs at [Memory Reference](#memory-reference))
 - `setHUDOpacity` - sets the opacity of the HUD
 - `setColor` - sets RGBColor combination
+- `setMusicVolume` - sets music volume
+- `setSoundEffectVolume` - sets sound effect volume
+- `setVoiceVolume` - sets voice volume
+- `setAudioOutput` - sets audio output
+- `setVoiceChanger` - sets voice changer
+- `setBrightness` - sets brightness
+- `setDistance` - sets distance
+- `setCombatDistance` - sets combat distance
+- `setVerticalRotationSpeed` - sets vertical rotation speed
+- `setHorizontalRotationSpeed` - sets horizontal rotation speed
+- `setHorizontalAutoAdjust` - sets horizontal auto adjust
+- `setVerticalAutoAdjust` - sets vertical auto adjust
+- `setFreeEnemyTracking` - sets free enemy tracking
+- `setZoomSpeed` - sets zoom speed
+- `setPursuitSpeed` - sets pursuit speed
+- `setLockedEnemyTracking` - sets locked enemy tracking
+- `setColor` - sets color
