@@ -128,7 +128,7 @@ If you make use of winsock2.h, you need to add the following definition into you
 - CMake
 - Microsoft `Desktop development with C++` toolkit
 
-### Static Library _Default_
+### Static Library (_Default_)
 
 set `-DNIERHOOK_STATIC_LIB=ON`
 
