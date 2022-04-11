@@ -6,7 +6,7 @@ A C++ library to attach to the NieR:Automata process and read/write memory.
 [Using NieRHook](#using-nierhook) <br>
 &emsp;[CMake Projects](#cmake-projects) <br>
 &emsp;[Dinamyc Library (.dll)](#dinamyc-link-library) <br>
-&emsp;[Static Library](#static-library) <br>
+&emsp;[Static Library](#static-library-default) <br>
 [Build NieRHook](#build-nierhook) <br>
 [Memory Reference](#memory-reference)<br>
 [NieRHook Reference](#nierhook-reference)
