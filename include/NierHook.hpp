@@ -67,8 +67,6 @@ class NieRHook
     float getXPosition(void);
     float getYPosition(void);
     float getZPosition(void);
-    std::string getLoadedSaveName(void);
-
     // Setters
     void setX(float X);
     void setY(float Y);

@@ -103,14 +103,6 @@ float NieRHook::getZPosition(void)
     return this->Zpos;
 }
 
-std::string NieRHook::getLoadedSaveName(void)
-{
-    char* value = readMemoryString(this->_offsets.savefiles.loaded, this->_offsets.savefiles.nameSize);
-    std::string name = std::string(value, this->_offsets.savefiles.nameSize);
-    free(value);
-    return name;
-}
-
 int NieRHook::getFunds(void)
 {
     return this->Funds;
@@ -481,7 +473,7 @@ void NieRHook::start(void)
         this->_offsets.savefiles.slot1 = 0x145BAA8;
         this->_offsets.savefiles.slot2 = 0x145BB08;
         this->_offsets.savefiles.slot3 = 0x145BB68;
-        this->_offsets.savefiles.nameSize = 16;
+        this->_offsets.savefiles.nameSize = 32;
 
         // Player
         this->_offsets.entity = 0x1020948;

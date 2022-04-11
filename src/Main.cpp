@@ -59,6 +59,8 @@ int main()
     // Print some values
     while (hook.isHooked())
     {
+        Sleep(500);
+        system("cls");
         switch (hook.getVersion())
         {
         case VER_0_0_1:
@@ -70,18 +72,17 @@ int main()
         default:
             break;
         }
-        if (hook.isSavefileLoaded())
-            std::cout << "Loaded Savefile: " << hook.getLoadedSaveName() << std::endl;
-        else
+        if (!hook.isSavefileLoaded())
+        {
             std::cout << "Loaded Savefile: NONE" << std::endl;
+            continue;
+        }
 
         hook.update(); // update hook internal values (Position, Health, Level...)
         std::cout << "X: " << hook.getXPosition() << "  Y: " << hook.getYPosition() << "  Z: " << hook.getYPosition()
                   << std::endl;
         std::cout << "Health: " << hook.getHealth() << std::endl;
         std::cout << "Press END to exit..." << std::endl;
-        Sleep(500);
-        system("cls");
     }
 
     // Join thread and exit
