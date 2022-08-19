@@ -392,16 +392,16 @@ char* NieRHook::readMemoryString(uintptr_t address, int size)
 
 void NieRHook::getGameVersion()
 {
-    // Check for v0.0.2
+    // Check for v1.0.2
     char* version = readMemoryString(this->_baseAddress + 0x1422130, 14);
     if (strcmp(version, "version v0.0.2") == 0)
     {
-        this->version = VER_0_0_2;
+        this->version = VER_1_0_2;
         free(version);
         return;
     }
 
-    // Check for v0.0.1
+    // Check for v1.0.1
     char version2[8];
     char* res;
     for (int i = 0; i < 7; i++)
@@ -413,12 +413,12 @@ void NieRHook::getGameVersion()
     version2[7] = '\0';
     if (strcmp(version, "1.0.0.0") == 0)
     {
-        this->version = VER_0_0_1;
+        this->version = VER_1_0_1;
         free(version);
         return;
     }
 
-    // No verion found
+    // No version found
     this->version = 0;
     free(version);
 }
@@ -445,23 +445,32 @@ NieRHook::~NieRHook()
 {
 }
 
-void NieRHook::start(void)
+void NieRHook::start(int version)
 {
+    // Obtain process ID
     DWORD ID = this->_pID;
     while (ID <= 0)
     {
         ID = this->_getProcessID();
     }
     this->_pID = ID;
+
+    // Get "NieRAutomata.exe" module base address
     this->_baseAddress = this->_getModuleBaseAddress(ID, L"NieRAutomata.exe");
 
-    this->getGameVersion();
-    if (this->version == 0)
-        return;
+    // Game version
+    if (version == -1)
+    {
+        this->getGameVersion();
+        if (this->version == 0)
+            return;
+    }
+    else
+        this->version = version;
 
     switch (this->version)
     {
-    case VER_0_0_2:
+    case VER_1_0_2:
         this->_offsets = {};
 
         // Game
@@ -533,7 +542,7 @@ void NieRHook::start(void)
         this->_offsets.InfiniteItemUsage.size = 3;
         break;
 
-    case VER_0_0_1:
+    case VER_1_0_1:
         this->_offsets = {};
 
         // Game
@@ -622,6 +631,11 @@ void NieRHook::start(void)
     }
 
     this->_hooked = true;
+}
+
+void NieRHook::start(void)
+{
+    start(AUTO);
 }
 
 void NieRHook::stop(void)

@@ -10,8 +10,9 @@
 #include <TlHelp32.h>
 #include <string>
 
-#define VER_0_0_1 001
-#define VER_0_0_2 002
+#define VER_1_0_1 1
+#define VER_1_0_2 2
+#define AUTO -1
 
 class NieRHook;
 class NieRHook
@@ -47,6 +48,7 @@ class NieRHook
   public:
     NieRHook();
     ~NieRHook();
+    void start(int version);
     void start(void); // Start hook
     void stop(void);  // Reset hook
     bool isHooked(void);

@@ -63,10 +63,10 @@ int main()
         system("cls");
         switch (hook.getVersion())
         {
-        case VER_0_0_1:
+        case VER_1_0_1:
             std::cout << "version 0.0.1" << std::endl;
             break;
-        case VER_0_0_2:
+        case VER_1_0_2:
             std::cout << "version 0.0.2" << std::endl;
             break;
         default:
