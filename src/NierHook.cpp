@@ -739,8 +739,14 @@ void NieRHook::start(int version)
         this->_offsets.LockedEnemyTracking = 0x1495714;
 
         // Cheats
-        // TODO this->_offsets.NoClipX;
-        // TODO this->_offsets.NoClipY;
+        this->_offsets.NoClipX.offset = 0x4E1290;
+        this->_offsets.NoClipX.disabled = (BYTE*)"\x48\x8B\xC4";
+        this->_offsets.NoClipX.enabled = (BYTE*)"\xC3\x90\x90";
+        this->_offsets.NoClipX.size = 3;
+        this->_offsets.NoClipY.offset = 0x4E1290;
+        this->_offsets.NoClipY.disabled = (BYTE*)"\x48\x8B\xC4";
+        this->_offsets.NoClipY.enabled = (BYTE*)"\xC3\x90\x90";
+        this->_offsets.NoClipY.size = 3;
         this->_offsets.InfiniteDoubleJump.offset = 0x47E257;
         this->_offsets.InfiniteDoubleJump.enabled = (BYTE*)"\xFF\x0F\x8C";
         this->_offsets.InfiniteDoubleJump.disabled = (BYTE*)"\x02\x0f\x8D";
