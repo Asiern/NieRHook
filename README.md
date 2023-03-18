@@ -177,6 +177,8 @@ You can find all the used IDs and offsets [here](https://docs.google.com/spreads
 - `InfiniteAirDash` - enables or disables Infinite Air Dash
 - `IgnoreUpgradeMaterials` - enables or disables Ignore Upgrade Materials
 - `FreeCamera` - enables or disables free camera movement
+- `SetA2Dash` - Set A2 type dash
+- `Set2BDash` - Set 2B type dash
 
 **Getters**
 

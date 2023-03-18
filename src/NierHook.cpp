@@ -328,6 +328,76 @@ void NieRHook::InfiniteItemUsage(bool enabled)
                this->_offsets.InfiniteItemUsage.disabled, this->_offsets.InfiniteItemUsage.size);
 }
 
+/**
+ * @brief Set A2 type dash
+ *
+ * @param enabled
+ */
+void NieRHook::SetA2Dash(bool enabled)
+{
+    if (enabled)
+    {
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashTypeSFX.offset),
+               this->_offsets.SetA2DashTypeSFX.enabled, this->_offsets.SetA2DashTypeSFX.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashType.offset), this->_offsets.SetA2DashType.enabled,
+               this->_offsets.SetA2DashType.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashInvisibility.offset),
+               this->_offsets.SetA2DashInvisibility.enabled, this->_offsets.SetA2DashInvisibility.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashDistance.offset),
+               this->_offsets.SetA2DashDistance.enabled, this->_offsets.SetA2DashDistance.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashVisualFX.offset),
+               this->_offsets.SetA2DashVisualFX.enabled, this->_offsets.SetA2DashVisualFX.size);
+    }
+    else
+    {
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashTypeSFX.offset),
+               this->_offsets.SetA2DashTypeSFX.disabled, this->_offsets.SetA2DashTypeSFX.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashType.offset), this->_offsets.SetA2DashType.disabled,
+               this->_offsets.SetA2DashType.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashInvisibility.offset),
+               this->_offsets.SetA2DashInvisibility.disabled, this->_offsets.SetA2DashInvisibility.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashDistance.offset),
+               this->_offsets.SetA2DashDistance.disabled, this->_offsets.SetA2DashDistance.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashVisualFX.offset),
+               this->_offsets.SetA2DashVisualFX.disabled, this->_offsets.SetA2DashVisualFX.size);
+    }
+}
+
+/**
+ * @brief Set 2B type dash
+ *
+ * @param enabled
+ */
+void NieRHook::Set2BDash(bool enabled)
+{
+    if (enabled)
+    {
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashTypeSFX.offset),
+               this->_offsets.Set2BDashTypeSFX.enabled, this->_offsets.Set2BDashTypeSFX.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashType.offset), this->_offsets.Set2BDashType.enabled,
+               this->_offsets.Set2BDashType.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashInvisibility.offset),
+               this->_offsets.Set2BDashInvisibility.enabled, this->_offsets.Set2BDashInvisibility.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashDistance.offset),
+               this->_offsets.Set2BDashDistance.enabled, this->_offsets.Set2BDashDistance.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashVisualFX.offset),
+               this->_offsets.Set2BDashVisualFX.enabled, this->_offsets.Set2BDashVisualFX.size);
+    }
+    else
+    {
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashTypeSFX.offset),
+               this->_offsets.Set2BDashTypeSFX.disabled, this->_offsets.Set2BDashTypeSFX.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashType.offset), this->_offsets.Set2BDashType.disabled,
+               this->_offsets.Set2BDashType.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashInvisibility.offset),
+               this->_offsets.Set2BDashInvisibility.disabled, this->_offsets.Set2BDashInvisibility.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashDistance.offset),
+               this->_offsets.Set2BDashDistance.disabled, this->_offsets.Set2BDashDistance.size);
+        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashVisualFX.offset),
+               this->_offsets.Set2BDashVisualFX.disabled, this->_offsets.Set2BDashVisualFX.size);
+    }
+}
+
 /*
     Add item to inventory
     If Item is not in the inventory, Creates a new Item on memory
@@ -687,6 +757,66 @@ void NieRHook::start(int version)
         this->_offsets.InfiniteItemUsage.enabled = (BYTE*)"\x90\x90\x90";
         this->_offsets.InfiniteItemUsage.disabled = (BYTE*)"\x89\x70\x08";
         this->_offsets.InfiniteItemUsage.size = 3;
+
+        // Dash offsets
+        this->_offsets.DashOptions.soundFX = 0x4B1145;
+        this->_offsets.DashOptions.type = 0x4B18F2;
+        this->_offsets.DashOptions.invisibility = 0x43A7D0;
+        this->_offsets.DashOptions.distanceType = 0x4DA57E;
+        this->_offsets.DashOptions.visualFX = 0x4B1D5F;
+
+        // Set A2 Dash type
+        this->_offsets.SetA2DashTypeSFX.disabled = (BYTE*)"\x8B\x8B\xB8\x05\x00\x00";
+        this->_offsets.SetA2DashTypeSFX.enabled = (BYTE*)"\xB9\x00\x01\x01\x00\x90";
+        this->_offsets.SetA2DashTypeSFX.offset = this->_offsets.DashOptions.soundFX;
+        this->_offsets.SetA2DashTypeSFX.size = 6;
+
+        this->_offsets.SetA2DashType.disabled = (BYTE*)"\x8B\x8B\xB8\x05\x00\x00";
+        this->_offsets.SetA2DashType.enabled = (BYTE*)"\xB9\x00\x01\x01\x00\x90";
+        this->_offsets.SetA2DashType.offset = this->_offsets.DashOptions.type;
+        this->_offsets.SetA2DashType.size = 6;
+
+        this->_offsets.SetA2DashInvisibility.disabled = (BYTE*)"\x8B\x91\xB8\x05\x00\x00";
+        this->_offsets.SetA2DashInvisibility.enabled = (BYTE*)"\xBA\x00\x01\x01\x00\x90";
+        this->_offsets.SetA2DashInvisibility.offset = this->_offsets.DashOptions.invisibility;
+        this->_offsets.SetA2DashInvisibility.size = 6;
+
+        this->_offsets.SetA2DashDistance.disabled = (BYTE*)"\x8B\x83\xB8\x05\x00\x00";
+        this->_offsets.SetA2DashDistance.enabled = (BYTE*)"\xB8\x00\x01\x01\x00\x90";
+        this->_offsets.SetA2DashDistance.offset = this->_offsets.DashOptions.distanceType;
+        this->_offsets.SetA2DashDistance.size = 6;
+
+        this->_offsets.SetA2DashVisualFX.disabled = (BYTE*)"\x8B\x83\xB8\x05\x00\x00";
+        this->_offsets.SetA2DashVisualFX.enabled = (BYTE*)"\xB8\x00\x01\x01\x00\x90";
+        this->_offsets.SetA2DashVisualFX.offset = this->_offsets.DashOptions.visualFX;
+        this->_offsets.SetA2DashVisualFX.size = 6;
+
+        // Set 2B Dash type
+        this->_offsets.Set2BDashTypeSFX.disabled = (BYTE*)"\x8B\x8B\xB8\x05\x00\x00";
+        this->_offsets.Set2BDashTypeSFX.enabled = (BYTE*)"\xB9\x00\x00\x01\x00\x90";
+        this->_offsets.Set2BDashTypeSFX.offset = this->_offsets.DashOptions.soundFX;
+        this->_offsets.Set2BDashTypeSFX.size = 6;
+
+        this->_offsets.Set2BDashType.disabled = (BYTE*)"\x8B\x8B\xB8\x05\x00\x00";
+        this->_offsets.Set2BDashType.enabled = (BYTE*)"\xB9\x00\x00\x01\x00\x90";
+        this->_offsets.Set2BDashType.offset = this->_offsets.DashOptions.type;
+        this->_offsets.Set2BDashType.size = 6;
+
+        this->_offsets.Set2BDashInvisibility.disabled = (BYTE*)"\x8B\x91\xB8\x05\x00\x00";
+        this->_offsets.Set2BDashInvisibility.enabled = (BYTE*)"\xBA\x00\x00\x01\x00\x90";
+        this->_offsets.Set2BDashInvisibility.offset = this->_offsets.DashOptions.invisibility;
+        this->_offsets.Set2BDashInvisibility.size = 6;
+
+        this->_offsets.Set2BDashDistance.disabled = (BYTE*)"\x8B\x83\xB8\x05\x00\x00";
+        this->_offsets.Set2BDashDistance.enabled = (BYTE*)"\xB8\x00\x00\x01\x00\x90";
+        this->_offsets.Set2BDashDistance.offset = this->_offsets.DashOptions.distanceType;
+        this->_offsets.Set2BDashDistance.size = 6;
+
+        this->_offsets.Set2BDashVisualFX.disabled = (BYTE*)"\x8B\x83\xB8\x05\x00\x00";
+        this->_offsets.Set2BDashVisualFX.enabled = (BYTE*)"\xB8\x00\x00\x01\x00\x90";
+        this->_offsets.Set2BDashVisualFX.offset = this->_offsets.DashOptions.visualFX;
+        this->_offsets.Set2BDashVisualFX.size = 6;
+
         break;
 
     case VER_1_0_1:

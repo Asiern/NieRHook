@@ -93,6 +93,7 @@ class NieRHook
     float getXPosition(void);
     float getYPosition(void);
     float getZPosition(void);
+
     // Setters
     void setX(float X);
     void setY(float Y);
@@ -110,6 +111,8 @@ class NieRHook
     void IgnoreUpgradeMaterials(bool enabled);
     void FreeCamera(bool enabled);
     void InfiniteItemUsage(bool enabled);
+    void SetA2Dash(bool enabled);
+    void Set2BDash(bool enabled);
 
     // Inventory
     bool addItem(int ID, int number);

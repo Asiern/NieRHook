@@ -24,6 +24,15 @@ typedef struct
     int nameSize;
 } saves;
 
+typedef struct
+{
+    uintptr_t soundFX;
+    uintptr_t type;
+    uintptr_t invisibility;
+    uintptr_t distanceType;
+    uintptr_t visualFX;
+} dash;
+
 struct offsets
 {
     // Game
@@ -82,6 +91,17 @@ struct offsets
     cheat PodMaterials;
     cheat FreeCamera;
     cheat InfiniteItemUsage;
+    dash DashOptions;
+    cheat SetA2DashTypeSFX;
+    cheat Set2BDashTypeSFX;
+    cheat SetA2DashType;
+    cheat Set2BDashType;
+    cheat SetA2DashInvisibility;
+    cheat Set2BDashInvisibility;
+    cheat SetA2DashDistance;
+    cheat Set2BDashDistance;
+    cheat SetA2DashVisualFX;
+    cheat Set2BDashVisualFX;
 };
 
 #endif;
