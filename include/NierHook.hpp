@@ -1,3 +1,14 @@
+/**
+ * @file NierHook.hpp
+ * @author Asiern (asiern.dev@gmail.com)
+ * @brief NieR:Automata Memory Hook
+ * @version 0.1
+ * @date 2023-03-12
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #ifndef NIERHOOK_H
 #define NIERHOOK_H
 #include "Offsets.hpp"
@@ -9,10 +20,23 @@
 
 #include <TlHelp32.h>
 #include <string>
+#include <vector>
 
 #define VER_1_0_1 1
 #define VER_1_0_2 2
 #define AUTO -1
+
+typedef struct
+{
+    int id;
+    int quantity;
+} inventoryItem;
+
+typedef struct
+{
+    int id;
+    short level;
+} inventoryWeapon;
 
 class NieRHook;
 class NieRHook
@@ -92,6 +116,8 @@ class NieRHook
     bool removeItem(int ID);
     bool addWeapon(int ID, int level);
     bool removeWeapon(int ID);
+    std::vector<inventoryItem> readInventory(void);
+    std::vector<inventoryWeapon> readWeapons(void);
 
     // Misc
     void setMusicVolume(int value);

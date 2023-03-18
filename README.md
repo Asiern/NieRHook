@@ -164,8 +164,10 @@ You can find all the used IDs and offsets [here](https://docs.google.com/spreads
 
 - `addItem` - Adds a specific quantity of items to the inventory (See item IDs at [Memory Reference](#memory-reference))
 - `removeItem` -Removes item from memory (See item IDs at [Memory Reference](#memory-reference))
+- `readInventory` - Read all items from memory and returns a vector (See item IDs at [Memory Reference](#memory-reference))
 - `addWeapon` - Adds a weapon to the inventory (See weapon IDs at [Memory Reference](#memory-reference))
-- `removeWeapon` - removes a weapon from the inventory (See weapon IDs at [Memory Reference](#memory-reference))
+- `removeWeapon` - Removes a weapon from the inventory (See weapon IDs at [Memory Reference](#memory-reference))
+- `readWeapons` - Read all weapons from memory and returns a vector (See item IDs at [Memory Reference](#memory-reference))
 
 **Cheats**
 

@@ -1,6 +1,21 @@
+/**
+ * @file NierHook.cpp
+ * @author Asiern (asiern.dev@gmail.com)
+ * @brief NieR:Automata Memory Hook
+ * @version 0.1
+ * @date 2023-03-12
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #include "NierHook.hpp"
 
-// Search for window named "NieR:Automata" returns: process ID
+/**
+ * @brief Search for window named "NieR:Automata"
+ *
+ * @return DWORD process ID
+ */
 DWORD NieRHook::_getProcessID(void)
 {
     // Search game window
@@ -16,7 +31,14 @@ DWORD NieRHook::_getProcessID(void)
 
     return pID;
 }
-// Find modules in NieR:Automata process returns: memory address of module
+
+/**
+ * @brief Find modules in NieR:Automata process
+ *
+ * @param procId process id
+ * @param modName name of module
+ * @return uintptr_t memory address of module
+ */
 uintptr_t NieRHook::_getModuleBaseAddress(DWORD procId, const wchar_t* modName)
 {
     uintptr_t modBaseAddr = 0;
@@ -41,7 +63,13 @@ uintptr_t NieRHook::_getModuleBaseAddress(DWORD procId, const wchar_t* modName)
     return modBaseAddr;
 }
 
-// Fill memory with custom values
+/**
+ * @brief Fill memory with custom values
+ *
+ * @param destination destination address
+ * @param src source address
+ * @param size size
+ */
 void NieRHook::_patch(BYTE* destination, BYTE* src, unsigned int size)
 {
     HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->_pID);
@@ -52,6 +80,10 @@ void NieRHook::_patch(BYTE* destination, BYTE* src, unsigned int size)
     CloseHandle(pHandle);
 }
 
+/**
+ * @brief Checkis if NieR:Automata process is still running. If process is not running stops hook.
+ *
+ */
 void NieRHook::hookStatus(void)
 {
     if (this->_pID != this->_getProcessID())
@@ -60,11 +92,22 @@ void NieRHook::hookStatus(void)
     }
 }
 
+/**
+ * @brief Get game version
+ *
+ * @return int game version
+ */
 int NieRHook::getVersion()
 {
     return this->version;
 }
 
+/**
+ * @brief Check if savefile is loaded
+ *
+ * @return true
+ * @return false
+ */
 bool NieRHook::isSavefileLoaded(void)
 {
     char* loaded = (char*)readMemoryString(this->_baseAddress + this->_offsets.savefiles.loaded,
@@ -74,7 +117,10 @@ bool NieRHook::isSavefileLoaded(void)
     return result;
 }
 
-// Update Player Attributes
+/**
+ * @brief Updates hook attributes
+ *
+ */
 void NieRHook::update(void)
 {
     this->_entityAddress = this->readMemory<uintptr_t>(this->_baseAddress + this->_offsets.entity);
@@ -88,16 +134,31 @@ void NieRHook::update(void)
     this->Funds = readMemory<int>(this->_baseAddress + this->_offsets.funds);
 }
 
+/**
+ * @brief Get value for X position
+ *
+ * @return float
+ */
 float NieRHook::getXPosition(void)
 {
     return this->Xpos;
 }
 
+/**
+ * @brief Get value for Y position
+ *
+ * @return float
+ */
 float NieRHook::getYPosition(void)
 {
     return this->Ypos;
 }
 
+/**
+ * @brief Get value for Z position
+ *
+ * @return float
+ */
 float NieRHook::getZPosition(void)
 {
     return this->Zpos;
@@ -174,6 +235,11 @@ void NieRHook::NoCooldown(bool enabled)
                this->_offsets.NoCooldown.size);
 }
 
+/**
+ * @brief Writes to memory a byte array to change op codes and enable infinite air dash cheat.
+ *
+ * @param enabled boolean indicating desirred status. True for enabled and false for disabled.
+ */
 void NieRHook::InfiniteAirDash(bool enabled)
 {
     if (enabled)
@@ -300,6 +366,13 @@ bool NieRHook::addItem(int ID, int number)
     return true;
 }
 
+/**
+ * @brief Remove item from inventory
+ *
+ * @param ID item ID
+ * @return true if removed
+ * @return false if not removed.m This could be cause by an error or the item might not be in the inventory.
+ */
 bool NieRHook::removeItem(int ID)
 {
     uintptr_t Address = this->_baseAddress + this->_offsets.items_first;
@@ -360,6 +433,13 @@ bool NieRHook::addWeapon(int ID, int level)
     return true;
 }
 
+/**
+ * @brief Removes weapon from inventory
+ *
+ * @param ID weapon ID
+ * @return true if removed
+ * @return false if not removed.m This could be cause by an error or the weapon is not in the inventory.
+ */
 bool NieRHook::removeWeapon(int ID)
 {
     uintptr_t Address = this->_baseAddress + this->_offsets.weapons_first;
@@ -381,6 +461,69 @@ bool NieRHook::removeWeapon(int ID)
     return false;
 }
 
+/**
+ * @brief Read memory and return a list of the inventory
+ *
+ * @return std::vector<inventoryItem>
+ */
+std::vector<inventoryItem> NieRHook::readInventory(void)
+{
+    std::vector<inventoryItem> items = std::vector<inventoryItem>();
+    uintptr_t addr = this->_baseAddress + this->_offsets.items_first;
+    int currentID;
+    inventoryItem currentItem;
+    if (!_hooked)
+        return items;
+
+    while (addr < this->_baseAddress + this->_offsets.items_last)
+    {
+        currentID = readMemory<int>(addr);
+        if (currentID != 0xffffffff)
+        {
+            currentItem.id = currentID;
+            currentItem.quantity = readMemory<int>(addr + 0x8);
+            items.push_back(currentItem);
+        }
+        addr += 0xC;
+    }
+    return items;
+}
+
+/**
+ * @brief Get weapon list from memory
+ *
+ * @return std::vector<inventoryWeapon>
+ */
+std::vector<inventoryWeapon> NieRHook::readWeapons(void)
+{
+    std::vector<inventoryWeapon> weapons = std::vector<inventoryWeapon>();
+    uintptr_t addr = this->_baseAddress + this->_offsets.weapons_first;
+    int currentID;
+    inventoryWeapon currentItem;
+    if (!_hooked)
+        return weapons;
+
+    while (addr < this->_baseAddress + this->_offsets.weapons_last)
+    {
+        currentID = readMemory<int>(addr);
+        if (currentID != 0xffffffff)
+        {
+            currentItem.id = currentID;
+            currentItem.level = readMemory<int>(addr + 0x4);
+            weapons.push_back(currentItem);
+        }
+        addr += 0x14;
+    }
+    return weapons;
+}
+
+/**
+ * @brief Read string from memory region
+ *
+ * @param address address to read
+ * @param size number of bytes to read
+ * @return char* read string
+ */
 char* NieRHook::readMemoryString(uintptr_t address, int size)
 {
     char* val = (char*)calloc(sizeof(char) * size, size);
@@ -390,6 +533,10 @@ char* NieRHook::readMemoryString(uintptr_t address, int size)
     return val;
 }
 
+/**
+ * @brief Get game version
+ *
+ */
 void NieRHook::getGameVersion()
 {
     // Check for v1.0.2
