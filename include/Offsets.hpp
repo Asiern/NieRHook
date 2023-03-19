@@ -102,6 +102,7 @@ struct offsets
     cheat Set2BDashDistance;
     cheat SetA2DashVisualFX;
     cheat Set2BDashVisualFX;
+    cheat InfiniteBuffDuration;
 };
 
 #endif;

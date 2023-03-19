@@ -378,6 +378,19 @@ void NieRHook::Set2BDash(bool enabled)
     }
 }
 
+/**
+ * @brief Infinite Buff duration cheat.
+ *
+ * @param enabled
+ */
+void NieRHook::InfiniteBuffDuration(bool enabled)
+{
+    if (enabled)
+        _enableCheat(&this->_offsets.InfiniteBuffDuration);
+    else
+        _disableCheat(&this->_offsets.InfiniteBuffDuration);
+}
+
 /*
     Add item to inventory
     If Item is not in the inventory, Creates a new Item on memory
@@ -806,6 +819,11 @@ void NieRHook::start(int version)
         this->_offsets.Set2BDashVisualFX.offset = this->_offsets.DashOptions.visualFX;
         this->_offsets.Set2BDashVisualFX.size = 6;
 
+        // Infinite buff duration
+        this->_offsets.InfiniteBuffDuration.offset = 0x519DC0;
+        this->_offsets.InfiniteBuffDuration.disabled = (BYTE*)"\x48\x8B\xC4";
+        this->_offsets.InfiniteBuffDuration.enabled = (BYTE*)"\xC3\x90\x90";
+        this->_offsets.InfiniteBuffDuration.size = 3;
         break;
 
     case VER_1_0_1:

@@ -115,6 +115,7 @@ class NieRHook
     void InfiniteItemUsage(bool enabled);
     void SetA2Dash(bool enabled);
     void Set2BDash(bool enabled);
+    void InfiniteBuffDuration(bool enabled);
 
     // Inventory
     bool addItem(int ID, int number);
