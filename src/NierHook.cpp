@@ -81,6 +81,26 @@ void NieRHook::_patch(BYTE* destination, BYTE* src, unsigned int size)
 }
 
 /**
+ * @brief Private function to enable a cheat. This replaces the default byte array in memory.
+ *
+ * @param c
+ */
+void NieRHook::_enableCheat(cheat* c)
+{
+    _patch((BYTE*)this->_baseAddress + c->offset, c->enabled, c->size);
+}
+
+/**
+ * @brief Private function to diable a cheat. This restores the default byte array in memory.
+ *
+ * @param c
+ */
+void NieRHook::_disableCheat(cheat* c)
+{
+    _patch((BYTE*)this->_baseAddress + c->offset, c->disabled, c->size);
+}
+
+/**
  * @brief Checkis if NieR:Automata process is still running. If process is not running stops hook.
  *
  */
@@ -228,11 +248,9 @@ void NieRHook::setGameSpeed(float speed)
 void NieRHook::NoCooldown(bool enabled)
 {
     if (enabled)
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.NoCooldown.offset), this->_offsets.NoCooldown.enabled,
-               this->_offsets.NoCooldown.size);
+        _enableCheat(&this->_offsets.NoCooldown);
     else
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.NoCooldown.offset), this->_offsets.NoCooldown.disabled,
-               this->_offsets.NoCooldown.size);
+        _disableCheat(&this->_offsets.NoCooldown);
 }
 
 /**
@@ -243,32 +261,22 @@ void NieRHook::NoCooldown(bool enabled)
 void NieRHook::InfiniteAirDash(bool enabled)
 {
     if (enabled)
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteAirDash.offset),
-               this->_offsets.InfiniteAirDash.enabled, this->_offsets.InfiniteAirDash.size);
+        _enableCheat(&this->_offsets.InfiniteAirDash);
     else
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteAirDash.offset),
-               this->_offsets.InfiniteAirDash.disabled, this->_offsets.InfiniteAirDash.size);
+        _disableCheat(&this->_offsets.InfiniteAirDash);
 }
 
 void NieRHook::IgnoreUpgradeMaterials(bool enabled)
 {
     if (enabled)
     { // Enable Ignore Upgrade Materials
-        // Set memory at offset 0x5EE5CE = 90 90 90 to disable Weapon
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.WeaponMaterials.offset),
-               this->_offsets.WeaponMaterials.enabled, this->_offsets.WeaponMaterials.size);
-        // Set memory at offset 0x5EE7F0 = 90 90 90 to disable Pod
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.PodMaterials.offset), this->_offsets.PodMaterials.enabled,
-               this->_offsets.PodMaterials.size);
+        _enableCheat(&this->_offsets.PodMaterials);
+        _enableCheat(&this->_offsets.WeaponMaterials);
     }
     else
     { // Disable Ignore Upgrade Materials
-        // Set memory at offset 0x5EE5CE = previous values
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.WeaponMaterials.offset),
-               this->_offsets.WeaponMaterials.disabled, this->_offsets.WeaponMaterials.size);
-        // Set memory at offset 0x5EE7F0 = previous values
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.PodMaterials.offset), this->_offsets.PodMaterials.disabled,
-               this->_offsets.PodMaterials.size);
+        _disableCheat(&this->_offsets.PodMaterials);
+        _disableCheat(&this->_offsets.WeaponMaterials);
     }
 }
 
@@ -276,28 +284,22 @@ void NieRHook::NoCLip(bool enabled)
 {
     if (enabled)
     {
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.NoClipX.offset), this->_offsets.NoClipX.enabled,
-               this->_offsets.NoClipX.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.NoClipY.offset), this->_offsets.NoClipY.enabled,
-               this->_offsets.NoClipY.size);
+        _enableCheat(&this->_offsets.NoClipX);
+        _enableCheat(&this->_offsets.NoClipY);
     }
     else
     {
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.NoClipX.offset), this->_offsets.NoClipX.disabled,
-               this->_offsets.NoClipX.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.NoClipY.offset), this->_offsets.NoClipY.disabled,
-               this->_offsets.NoClipY.size);
+        _disableCheat(&this->_offsets.NoClipX);
+        _disableCheat(&this->_offsets.NoClipY);
     }
 }
 
 void NieRHook::InfiniteDoubleJump(bool enabled)
 {
     if (enabled)
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteDoubleJump.offset),
-               this->_offsets.InfiniteDoubleJump.enabled, this->_offsets.InfiniteDoubleJump.size);
+        _enableCheat(&this->_offsets.InfiniteDoubleJump);
     else
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteDoubleJump.offset),
-               this->_offsets.InfiniteDoubleJump.disabled, this->_offsets.InfiniteDoubleJump.size);
+        _disableCheat(&this->_offsets.InfiniteDoubleJump);
 }
 
 // TODO FreeCamera implementation
@@ -321,11 +323,9 @@ void NieRHook::FreeCamera(bool enabled)
 void NieRHook::InfiniteItemUsage(bool enabled)
 {
     if (enabled)
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteItemUsage.offset),
-               this->_offsets.InfiniteItemUsage.enabled, this->_offsets.InfiniteItemUsage.size);
+        _enableCheat(&this->_offsets.InfiniteItemUsage);
     else
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.InfiniteItemUsage.offset),
-               this->_offsets.InfiniteItemUsage.disabled, this->_offsets.InfiniteItemUsage.size);
+        _disableCheat(&this->_offsets.InfiniteItemUsage);
 }
 
 /**
@@ -337,29 +337,19 @@ void NieRHook::SetA2Dash(bool enabled)
 {
     if (enabled)
     {
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashTypeSFX.offset),
-               this->_offsets.SetA2DashTypeSFX.enabled, this->_offsets.SetA2DashTypeSFX.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashType.offset), this->_offsets.SetA2DashType.enabled,
-               this->_offsets.SetA2DashType.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashInvisibility.offset),
-               this->_offsets.SetA2DashInvisibility.enabled, this->_offsets.SetA2DashInvisibility.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashDistance.offset),
-               this->_offsets.SetA2DashDistance.enabled, this->_offsets.SetA2DashDistance.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashVisualFX.offset),
-               this->_offsets.SetA2DashVisualFX.enabled, this->_offsets.SetA2DashVisualFX.size);
+        _enableCheat(&this->_offsets.SetA2DashTypeSFX);
+        _enableCheat(&this->_offsets.SetA2DashType);
+        _enableCheat(&this->_offsets.SetA2DashInvisibility);
+        _enableCheat(&this->_offsets.SetA2DashDistance);
+        _enableCheat(&this->_offsets.SetA2DashVisualFX);
     }
     else
     {
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashTypeSFX.offset),
-               this->_offsets.SetA2DashTypeSFX.disabled, this->_offsets.SetA2DashTypeSFX.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashType.offset), this->_offsets.SetA2DashType.disabled,
-               this->_offsets.SetA2DashType.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashInvisibility.offset),
-               this->_offsets.SetA2DashInvisibility.disabled, this->_offsets.SetA2DashInvisibility.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashDistance.offset),
-               this->_offsets.SetA2DashDistance.disabled, this->_offsets.SetA2DashDistance.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.SetA2DashVisualFX.offset),
-               this->_offsets.SetA2DashVisualFX.disabled, this->_offsets.SetA2DashVisualFX.size);
+        _disableCheat(&this->_offsets.SetA2DashTypeSFX);
+        _disableCheat(&this->_offsets.SetA2DashType);
+        _disableCheat(&this->_offsets.SetA2DashInvisibility);
+        _disableCheat(&this->_offsets.SetA2DashDistance);
+        _disableCheat(&this->_offsets.SetA2DashVisualFX);
     }
 }
 
@@ -372,29 +362,19 @@ void NieRHook::Set2BDash(bool enabled)
 {
     if (enabled)
     {
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashTypeSFX.offset),
-               this->_offsets.Set2BDashTypeSFX.enabled, this->_offsets.Set2BDashTypeSFX.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashType.offset), this->_offsets.Set2BDashType.enabled,
-               this->_offsets.Set2BDashType.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashInvisibility.offset),
-               this->_offsets.Set2BDashInvisibility.enabled, this->_offsets.Set2BDashInvisibility.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashDistance.offset),
-               this->_offsets.Set2BDashDistance.enabled, this->_offsets.Set2BDashDistance.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashVisualFX.offset),
-               this->_offsets.Set2BDashVisualFX.enabled, this->_offsets.Set2BDashVisualFX.size);
+        _enableCheat(&this->_offsets.Set2BDashTypeSFX);
+        _enableCheat(&this->_offsets.Set2BDashType);
+        _enableCheat(&this->_offsets.Set2BDashInvisibility);
+        _enableCheat(&this->_offsets.Set2BDashDistance);
+        _enableCheat(&this->_offsets.Set2BDashVisualFX);
     }
     else
     {
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashTypeSFX.offset),
-               this->_offsets.Set2BDashTypeSFX.disabled, this->_offsets.Set2BDashTypeSFX.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashType.offset), this->_offsets.Set2BDashType.disabled,
-               this->_offsets.Set2BDashType.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashInvisibility.offset),
-               this->_offsets.Set2BDashInvisibility.disabled, this->_offsets.Set2BDashInvisibility.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashDistance.offset),
-               this->_offsets.Set2BDashDistance.disabled, this->_offsets.Set2BDashDistance.size);
-        _patch((BYTE*)(this->_baseAddress + this->_offsets.Set2BDashVisualFX.offset),
-               this->_offsets.Set2BDashVisualFX.disabled, this->_offsets.Set2BDashVisualFX.size);
+        _disableCheat(&this->_offsets.Set2BDashTypeSFX);
+        _disableCheat(&this->_offsets.Set2BDashType);
+        _disableCheat(&this->_offsets.Set2BDashInvisibility);
+        _disableCheat(&this->_offsets.Set2BDashDistance);
+        _disableCheat(&this->_offsets.Set2BDashVisualFX);
     }
 }
 
@@ -756,7 +736,10 @@ void NieRHook::start(int version)
         this->_offsets.InfiniteAirDash.enabled = (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90";
         this->_offsets.InfiniteAirDash.disabled = (BYTE*)"\xC7\x83\x98\x0A\x01\x00\x01\x00\x00\x00";
         this->_offsets.InfiniteAirDash.size = 10;
-        // TODO this->_offsets.WeaponMaterials;
+        this->_offsets.WeaponMaterials.offset = 0x976F72;
+        this->_offsets.WeaponMaterials.disabled = (BYTE*)"\x85\xC0";
+        this->_offsets.WeaponMaterials.enabled = (BYTE*)"\x31\xC8";
+        this->_offsets.WeaponMaterials.size = 2;
         // TODO this->_offsets.PodMaterials;
         // TODO this->_offsets.FreeCamera;
         this->_offsets.InfiniteItemUsage.offset = 0x7C9D82;

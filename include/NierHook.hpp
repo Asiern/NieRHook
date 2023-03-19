@@ -64,6 +64,8 @@ class NieRHook
     DWORD _getProcessID(void);
     uintptr_t _getModuleBaseAddress(DWORD procId, const wchar_t* modName);
     void _patch(BYTE* destination, BYTE* src, unsigned int size);
+    void _enableCheat(cheat* c);
+    void _disableCheat(cheat* c);
     template <typename T> T readMemory(uintptr_t address);
     template <typename T> void writeMemory(uintptr_t address, T value);
     char* readMemoryString(uintptr_t address, int size);
