@@ -391,6 +391,19 @@ void NieRHook::InfiniteBuffDuration(bool enabled)
         _disableCheat(&this->_offsets.InfiniteBuffDuration);
 }
 
+/**
+ * @brief Save Anywhere cheat. Makes user able to save game far from savepoints.
+ *
+ * @param enabled
+ */
+void NieRHook::SaveAnywhere(bool enabled)
+{
+    if (enabled)
+        _enableCheat(&this->_offsets.SaveAnywhere);
+    else
+        _disableCheat(&this->_offsets.SaveAnywhere);
+}
+
 /*
     Add item to inventory
     If Item is not in the inventory, Creates a new Item on memory
@@ -824,6 +837,12 @@ void NieRHook::start(int version)
         this->_offsets.InfiniteBuffDuration.disabled = (BYTE*)"\x48\x8B\xC4";
         this->_offsets.InfiniteBuffDuration.enabled = (BYTE*)"\xC3\x90\x90";
         this->_offsets.InfiniteBuffDuration.size = 3;
+
+        // Save Anywhere
+        this->_offsets.SaveAnywhere.offset = 0x38C7C7;
+        this->_offsets.SaveAnywhere.disabled = (BYTE*)"\x0F\x94\xC0";
+        this->_offsets.SaveAnywhere.enabled = (BYTE*)"\xB0\x01\x90";
+        this->_offsets.SaveAnywhere.size = 3;
         break;
 
     case VER_1_0_1:

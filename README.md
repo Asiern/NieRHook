@@ -179,7 +179,8 @@ You can find all the used IDs and offsets [here](https://docs.google.com/spreads
 - `FreeCamera` - enables or disables free camera movement
 - `SetA2Dash` - Set A2 type dash
 - `Set2BDash` - Set 2B type dash
-- `InfiniteBuffDuration` - enables or diables Infinite Buff Duration.
+- `InfiniteBuffDuration` - enables or diables Infinite Buff Duration
+- `SaveAnywhere` - enables or disables Save Anywhere
 
 **Getters**
 
