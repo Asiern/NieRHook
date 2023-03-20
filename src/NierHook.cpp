@@ -282,15 +282,33 @@ void NieRHook::IgnoreUpgradeMaterials(bool enabled)
 
 void NieRHook::NoCLip(bool enabled)
 {
-    if (enabled)
+    switch (this->version)
     {
-        _enableCheat(&this->_offsets.NoClipX);
-        _enableCheat(&this->_offsets.NoClipY);
-    }
-    else
-    {
-        _disableCheat(&this->_offsets.NoClipX);
-        _disableCheat(&this->_offsets.NoClipY);
+    case VER_1_0_1:
+        if (enabled)
+        {
+            _enableCheat(&this->_offsets.NoClipX);
+            _enableCheat(&this->_offsets.NoClipY);
+        }
+        else
+        {
+            _disableCheat(&this->_offsets.NoClipX);
+            _disableCheat(&this->_offsets.NoClipY);
+        }
+        break;
+    case VER_1_0_2:
+        if (enabled)
+        {
+            _enableCheat(&this->_offsets.NoClipX);
+            // this->noClipWorkerHandle = CreateThread(NULL, 0, NieRHook::_noClipWorker(), NULL, 0, NULL);
+            // std::cout << this->noClipWorkerHandle << std::endl;
+        }
+        else
+        {
+            _disableCheat(&this->_offsets.NoClipX);
+            // CloseHandle(this->noClipWorkerHandle);
+        }
+        break;
     }
 }
 
@@ -404,11 +422,34 @@ void NieRHook::SaveAnywhere(bool enabled)
         _disableCheat(&this->_offsets.SaveAnywhere);
 }
 
-/*
-    Add item to inventory
-    If Item is not in the inventory, Creates a new Item on memory
-    returns: true if successful and false if not
-*/
+/**
+ * @brief Get infinite uses of consumables
+ *
+ * @param enabled
+ */
+void NieRHook::InfiniteConsumableItems(bool enabled)
+{
+    if (enabled)
+    {
+        _enableCheat(&this->_offsets.InfiniteConsumableItems);
+        _enableCheat(&this->_offsets.InfiniteConsumableSupportItems);
+    }
+    else
+    {
+        _disableCheat(&this->_offsets.InfiniteConsumableItems);
+        _disableCheat(&this->_offsets.InfiniteConsumableSupportItems);
+    }
+}
+
+/**
+ * @brief  Add item to inventory.
+ * If Item is not in the inventory, Creates a new Item on memory
+ *
+ * @param ID item id
+ * @param number items quantity
+ * @return true if successful
+ * @return false if not success
+ */
 bool NieRHook::addItem(int ID, int number)
 {
     uintptr_t Address = this->_baseAddress + this->_offsets.items_first;
@@ -447,7 +488,7 @@ bool NieRHook::addItem(int ID, int number)
  *
  * @param ID item ID
  * @return true if removed
- * @return false if not removed.m This could be cause by an error or the item might not be in the inventory.
+ * @return false if not removed. This could be cause by an error or the item might not be in the inventory.
  */
 bool NieRHook::removeItem(int ID)
 {
@@ -682,7 +723,7 @@ void NieRHook::start(int version)
     this->_baseAddress = this->_getModuleBaseAddress(ID, L"NieRAutomata.exe");
 
     // Game version
-    if (version == -1)
+    if (version == AUTO)
     {
         this->getGameVersion();
         if (this->version == 0)
@@ -843,6 +884,18 @@ void NieRHook::start(int version)
         this->_offsets.SaveAnywhere.disabled = (BYTE*)"\x0F\x94\xC0";
         this->_offsets.SaveAnywhere.enabled = (BYTE*)"\xB0\x01\x90";
         this->_offsets.SaveAnywhere.size = 3;
+
+        // Infinite consumable items
+        this->_offsets.InfiniteConsumableItems.offset = 0x84410C;
+        this->_offsets.InfiniteConsumableItems.disabled = (BYTE*)"\x41\xB8\xFF\xFF\xFF\xFF";
+        this->_offsets.InfiniteConsumableItems.enabled = (BYTE*)"\x45\x31\xC0\x90\x90\x90";
+        this->_offsets.InfiniteConsumableItems.size = 6;
+
+        this->_offsets.InfiniteConsumableSupportItems.offset = 0x7D604D;
+        this->_offsets.InfiniteConsumableSupportItems.disabled = (BYTE*)"\x41\xB8\xFF\xFF\xFF\xFF";
+        this->_offsets.InfiniteConsumableSupportItems.enabled = (BYTE*)"\x45\x31\xC0\x90\x90\x90";
+        this->_offsets.InfiniteConsumableSupportItems.size = 6;
+
         break;
 
     case VER_1_0_1:

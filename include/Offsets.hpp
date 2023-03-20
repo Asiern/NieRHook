@@ -104,6 +104,8 @@ struct offsets
     cheat Set2BDashVisualFX;
     cheat InfiniteBuffDuration;
     cheat SaveAnywhere;
+    cheat InfiniteConsumableItems;
+    cheat InfiniteConsumableSupportItems;
 };
 
 #endif;
