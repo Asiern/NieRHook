@@ -181,6 +181,7 @@ You can find all the used IDs and offsets [here](https://docs.google.com/spreads
 - `Set2BDash` - Set 2B type dash
 - `InfiniteBuffDuration` - enables or diables Infinite Buff Duration
 - `SaveAnywhere` - enables or disables Save Anywhere
+- `InfiniteConsumableItems` - enables or disables Infinite Consumable Items
 
 **Getters**
 
