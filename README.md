@@ -1,6 +1,6 @@
 # NieR:Automata Hook
 
-A C++ library to attach to the NieR:Automata process and read/write memory.
+Unleash the full potential of NieR:Automata through direct access and control of the game process from your C++ projects, enabling precise manipulation of game behavior by reading and writing memory values.
 
 [NieRHook Demo](#nierhook-demo) <br>
 [Using NieRHook](#using-nierhook) <br>
