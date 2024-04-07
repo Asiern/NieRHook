@@ -60,11 +60,6 @@ void NieRHook::hookStatus(void)
     }
 }
 
-int NieRHook::getVersion()
-{
-    return this->version;
-}
-
 bool NieRHook::isSavefileLoaded(void)
 {
     char* loaded = (char*)readMemoryString(this->_baseAddress + this->_offsets.savefiles.loaded,
@@ -390,38 +385,39 @@ char* NieRHook::readMemoryString(uintptr_t address, int size)
     return val;
 }
 
-void NieRHook::getGameVersion()
-{
-    // Check for v0.0.2
-    char* version = readMemoryString(this->_baseAddress + 0x1422130, 14);
-    if (strcmp(version, "version v0.0.2") == 0)
-    {
-        this->version = VER_0_0_2;
-        free(version);
-        return;
-    }
+// TODO: Implement getGameVersion
+// void NieRHook::getGameVersion()
+// {
+//     // Check for v0.0.2
+//     char* version = readMemoryString(this->_baseAddress + 0x1422130, 14);
+//     if (strcmp(version, "version v0.0.2") == 0)
+//     {
+//         this->version = VER_0_0_2;
+//         free(version);
+//         return;
+//     }
 
-    // Check for v0.0.1
-    char version2[8];
-    char* res;
-    for (int i = 0; i < 7; i++)
-    {
-        res = readMemoryString(this->_baseAddress + 0x6557790 + (i * 2), 1);
-        version[i] = *res;
-        free(res);
-    }
-    version2[7] = '\0';
-    if (strcmp(version, "1.0.0.0") == 0)
-    {
-        this->version = VER_0_0_1;
-        free(version);
-        return;
-    }
+//     // Check for v0.0.1
+//     char version2[8];
+//     char* res;
+//     for (int i = 0; i < 7; i++)
+//     {
+//         res = readMemoryString(this->_baseAddress + 0x6557790 + (i * 2), 1);
+//         version[i] = *res;
+//         free(res);
+//     }
+//     version2[7] = '\0';
+//     if (strcmp(version, "1.0.0.0") == 0)
+//     {
+//         this->version = VER_0_0_1;
+//         free(version);
+//         return;
+//     }
 
-    // No verion found
-    this->version = 0;
-    free(version);
-}
+//     // No verion found
+//     this->version = 0;
+//     free(version);
+// }
 
 NieRHook::NieRHook()
 {
@@ -438,7 +434,7 @@ NieRHook::NieRHook()
     this->Funds = 0;
     this->Level = 0;
     this->_offsets = {};
-    this->version = 0;
+    // this->version = 0;
 }
 
 NieRHook::~NieRHook()
@@ -455,171 +451,159 @@ void NieRHook::start(void)
     this->_pID = ID;
     this->_baseAddress = this->_getModuleBaseAddress(ID, L"NieRAutomata.exe");
 
-    this->getGameVersion();
-    if (this->version == 0)
-        return;
+    // Game Version 0.0.2
+    this->_offsets.GameSpeed;
+    this->_offsets.version = 0x1422130;
 
-    switch (this->version)
-    {
-    case VER_0_0_2:
-        this->_offsets = {};
+    // SaveFiles
+    this->_offsets.savefiles.loaded = 0x13EADB0;
+    this->_offsets.savefiles.slot1 = 0x145BAA8;
+    this->_offsets.savefiles.slot2 = 0x145BB08;
+    this->_offsets.savefiles.slot3 = 0x145BB68;
+    this->_offsets.savefiles.nameSize = 32;
 
-        // Game
-        this->_offsets.GameSpeed;
-        this->_offsets.version = 0x1422130;
+    // Player
+    this->_offsets.entity = 0x1020948;
+    this->_offsets.health = 0x858;
+    this->_offsets.maxHealth = 0x85c;
+    this->_offsets.x = 0x50;
+    this->_offsets.y = 0x54;
+    this->_offsets.z = 0x58;
+    this->_offsets.level = 0x14BC;
+    this->_offsets.exp = 0xFC6060;
+    this->_offsets.funds = 0xFC6064;
 
-        // SaveFiles
-        this->_offsets.savefiles.loaded = 0x13EADB0;
-        this->_offsets.savefiles.slot1 = 0x145BAA8;
-        this->_offsets.savefiles.slot2 = 0x145BB08;
-        this->_offsets.savefiles.slot3 = 0x145BB68;
-        this->_offsets.savefiles.nameSize = 32;
+    // Items
+    this->_offsets.items_first = 0x148C4C4;
+    this->_offsets.items_last = 0x148CE18;
 
-        // Player
-        this->_offsets.entity = 0x1020948;
-        this->_offsets.health = 0x858;
-        this->_offsets.maxHealth = 0x85c;
-        this->_offsets.x = 0x50;
-        this->_offsets.y = 0x54;
-        this->_offsets.z = 0x58;
-        this->_offsets.level = 0x14BC;
-        this->_offsets.exp = 0xFC6060;
-        this->_offsets.funds = 0xFC6064;
+    // Weapons
+    this->_offsets.weapons_first = 0x148DCC4;
+    this->_offsets.weapons_last = 0x148DFBC;
 
-        // Items
-        this->_offsets.items_first = 0x148C4C4;
-        this->_offsets.items_last = 0x148CE18;
+    // Misc
+    this->_offsets.MusicVolume = 0x14956C0;
+    this->_offsets.SoundEffectVolume = 0x14956C4;
+    this->_offsets.VoiceVolume = 0x14956C8;
+    this->_offsets.AudioOutput = 0x14956CC;
+    this->_offsets.VoiceChanger = 0x14956D0;
+    this->_offsets.ScreenBrightness = 0x14956DC;
+    this->_offsets.Distance = 0x14956EC;
+    this->_offsets.CombatDistance = 0x14956F0;
+    this->_offsets.VerticalRotationSpeed = 0x14956F4;
+    this->_offsets.HorizontalRotationSpeed = 0x14956F8;
+    this->_offsets.HorizontalAutoAdjust = 0x14956FC;
+    this->_offsets.VerticalAutoAdjust = 0x1495700;
+    this->_offsets.FreeEnemyTracking = 0x1495704;
+    this->_offsets.ZoomSpeed = 0x1495708;
+    this->_offsets.PursuitSpeed = 0x1495710;
+    this->_offsets.LockedEnemyTracking = 0x1495714;
 
-        // Weapons
-        this->_offsets.weapons_first = 0x148DCC4;
-        this->_offsets.weapons_last = 0x148DFBC;
+    // Cheats
+    // TODO this->_offsets.NoClipX;
+    // TODO this->_offsets.NoClipY;
+    this->_offsets.InfiniteDoubleJump.offset = 0x47E257;
+    this->_offsets.InfiniteDoubleJump.enabled = (BYTE*)"\xFF\x0F\x8C";
+    this->_offsets.InfiniteDoubleJump.disabled = (BYTE*)"\x02\x0f\x8D";
+    this->_offsets.InfiniteDoubleJump.size = 3;
+    // TODO this->_offsets.NoCooldown;
+    this->_offsets.InfiniteAirDash.offset = 0x47E391;
+    this->_offsets.InfiniteAirDash.enabled = (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90";
+    this->_offsets.InfiniteAirDash.disabled = (BYTE*)"\xC7\x83\x98\x0A\x01\x00\x01\x00\x00\x00";
+    this->_offsets.InfiniteAirDash.size = 10;
+    // TODO this->_offsets.WeaponMaterials;
+    // TODO this->_offsets.PodMaterials;
+    // TODO this->_offsets.FreeCamera;
+    this->_offsets.InfiniteItemUsage.offset = 0x7C9D82;
+    this->_offsets.InfiniteItemUsage.enabled = (BYTE*)"\x90\x90\x90";
+    this->_offsets.InfiniteItemUsage.disabled = (BYTE*)"\x89\x70\x08";
+    this->_offsets.InfiniteItemUsage.size = 3;
 
-        // Misc
-        this->_offsets.MusicVolume = 0x14956C0;
-        this->_offsets.SoundEffectVolume = 0x14956C4;
-        this->_offsets.VoiceVolume = 0x14956C8;
-        this->_offsets.AudioOutput = 0x14956CC;
-        this->_offsets.VoiceChanger = 0x14956D0;
-        this->_offsets.ScreenBrightness = 0x14956DC;
-        this->_offsets.Distance = 0x14956EC;
-        this->_offsets.CombatDistance = 0x14956F0;
-        this->_offsets.VerticalRotationSpeed = 0x14956F4;
-        this->_offsets.HorizontalRotationSpeed = 0x14956F8;
-        this->_offsets.HorizontalAutoAdjust = 0x14956FC;
-        this->_offsets.VerticalAutoAdjust = 0x1495700;
-        this->_offsets.FreeEnemyTracking = 0x1495704;
-        this->_offsets.ZoomSpeed = 0x1495708;
-        this->_offsets.PursuitSpeed = 0x1495710;
-        this->_offsets.LockedEnemyTracking = 0x1495714;
+    // Game Version 0.0.1
+    // this->_offsets = {};
 
-        // Cheats
-        // TODO this->_offsets.NoClipX;
-        // TODO this->_offsets.NoClipY;
-        this->_offsets.InfiniteDoubleJump.offset = 0x47E257;
-        this->_offsets.InfiniteDoubleJump.enabled = (BYTE*)"\xFF\x0F\x8C";
-        this->_offsets.InfiniteDoubleJump.disabled = (BYTE*)"\x02\x0f\x8D";
-        this->_offsets.InfiniteDoubleJump.size = 3;
-        // TODO this->_offsets.NoCooldown;
-        this->_offsets.InfiniteAirDash.offset = 0x47E391;
-        this->_offsets.InfiniteAirDash.enabled = (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90";
-        this->_offsets.InfiniteAirDash.disabled = (BYTE*)"\xC7\x83\x98\x0A\x01\x00\x01\x00\x00\x00";
-        this->_offsets.InfiniteAirDash.size = 10;
-        // TODO this->_offsets.WeaponMaterials;
-        // TODO this->_offsets.PodMaterials;
-        // TODO this->_offsets.FreeCamera;
-        this->_offsets.InfiniteItemUsage.offset = 0x7C9D82;
-        this->_offsets.InfiniteItemUsage.enabled = (BYTE*)"\x90\x90\x90";
-        this->_offsets.InfiniteItemUsage.disabled = (BYTE*)"\x89\x70\x08";
-        this->_offsets.InfiniteItemUsage.size = 3;
-        break;
+    // // Game
+    // this->_offsets.GameSpeed = 0x160E6D8;
+    // this->_offsets.version = 0x6557790;
 
-    case VER_0_0_1:
-        this->_offsets = {};
+    // // SaveFiles
+    // this->_offsets.savefiles.loaded = 0x18E9E00;
+    // this->_offsets.savefiles.slot1 = 0x194BAA8;
+    // this->_offsets.savefiles.slot2 = 0x194BB08;
+    // this->_offsets.savefiles.slot3 = 0x194BB68;
+    // this->_offsets.savefiles.nameSize = 16;
 
-        // Game
-        this->_offsets.GameSpeed = 0x160E6D8;
-        this->_offsets.version = 0x6557790;
+    // // Player
+    // this->_offsets.entity = 0x16053B8;
+    // this->_offsets.health = 0x858;
+    // this->_offsets.maxHealth = 0x85c;
+    // this->_offsets.x = 0x50;
+    // this->_offsets.y = 0x54;
+    // this->_offsets.z = 0x58;
+    // this->_offsets.level = 0x14BC;
+    // this->_offsets.exp = 0x1984670;
+    // this->_offsets.funds = 0x1984674;
 
-        // SaveFiles
-        this->_offsets.savefiles.loaded = 0x18E9E00;
-        this->_offsets.savefiles.slot1 = 0x194BAA8;
-        this->_offsets.savefiles.slot2 = 0x194BB08;
-        this->_offsets.savefiles.slot3 = 0x194BB68;
-        this->_offsets.savefiles.nameSize = 16;
+    // // Items
+    // this->_offsets.items_first = 0x197C4C4;
+    // this->_offsets.items_last = 0x197CE18;
 
-        // Player
-        this->_offsets.entity = 0x16053B8;
-        this->_offsets.health = 0x858;
-        this->_offsets.maxHealth = 0x85c;
-        this->_offsets.x = 0x50;
-        this->_offsets.y = 0x54;
-        this->_offsets.z = 0x58;
-        this->_offsets.level = 0x14BC;
-        this->_offsets.exp = 0x1984670;
-        this->_offsets.funds = 0x1984674;
+    // // Weapons
+    // this->_offsets.weapons_first = 0x197DCC4;
+    // this->_offsets.weapons_last = 0x197DFBC;
 
-        // Items
-        this->_offsets.items_first = 0x197C4C4;
-        this->_offsets.items_last = 0x197CE18;
+    // // Misc
+    // this->_offsets.MusicVolume = 0x19856C0;
+    // this->_offsets.SoundEffectVolume = 0x19856C4;
+    // this->_offsets.VoiceVolume = 0x19856C8;
+    // this->_offsets.AudioOutput = 0x19856CC;
+    // this->_offsets.VoiceChanger = 0x19856D0;
+    // this->_offsets.ScreenBrightness = 0x19856DC;
+    // this->_offsets.Distance = 0x19856EC;
+    // this->_offsets.CombatDistance = 0x19856F0;
+    // this->_offsets.VerticalRotationSpeed = 0x19856F4;
+    // this->_offsets.HorizontalRotationSpeed = 0x19856F8;
+    // this->_offsets.HorizontalAutoAdjust = 0x19856FC;
+    // this->_offsets.VerticalAutoAdjust = 0x1985700;
+    // this->_offsets.FreeEnemyTracking = 0x1985704;
+    // this->_offsets.ZoomSpeed = 0x1985708;
+    // this->_offsets.PursuitSpeed = 0x1985710;
+    // this->_offsets.LockedEnemyTracking = 0x1985714;
 
-        // Weapons
-        this->_offsets.weapons_first = 0x197DCC4;
-        this->_offsets.weapons_last = 0x197DFBC;
-
-        // Misc
-        this->_offsets.MusicVolume = 0x19856C0;
-        this->_offsets.SoundEffectVolume = 0x19856C4;
-        this->_offsets.VoiceVolume = 0x19856C8;
-        this->_offsets.AudioOutput = 0x19856CC;
-        this->_offsets.VoiceChanger = 0x19856D0;
-        this->_offsets.ScreenBrightness = 0x19856DC;
-        this->_offsets.Distance = 0x19856EC;
-        this->_offsets.CombatDistance = 0x19856F0;
-        this->_offsets.VerticalRotationSpeed = 0x19856F4;
-        this->_offsets.HorizontalRotationSpeed = 0x19856F8;
-        this->_offsets.HorizontalAutoAdjust = 0x19856FC;
-        this->_offsets.VerticalAutoAdjust = 0x1985700;
-        this->_offsets.FreeEnemyTracking = 0x1985704;
-        this->_offsets.ZoomSpeed = 0x1985708;
-        this->_offsets.PursuitSpeed = 0x1985710;
-        this->_offsets.LockedEnemyTracking = 0x1985714;
-
-        // Cheats
-        this->_offsets.NoClipX.offset = 0x1354B1;
-        this->_offsets.NoClipX.enabled = (BYTE*)"\x90\x90\x90\x90";
-        this->_offsets.NoClipX.disabled = (BYTE*)"\x0F\x29\x42\x50";
-        this->_offsets.NoClipX.size = 4;
-        this->_offsets.NoClipY.offset = 0x135758;
-        this->_offsets.NoClipY.enabled = (BYTE*)"\x90\x90\x90\x90";
-        this->_offsets.NoClipY.disabled = (BYTE*)"\x0F\x29\x43\x50";
-        this->_offsets.NoClipY.size = 4;
-        this->_offsets.InfiniteDoubleJump.offset = 0x1E2D4C;
-        this->_offsets.InfiniteDoubleJump.enabled = (BYTE*)"\xFF\x0F\x8C";
-        this->_offsets.InfiniteDoubleJump.disabled = (BYTE*)"\x02\x0f\x8D";
-        this->_offsets.InfiniteDoubleJump.size = 3;
-        this->_offsets.NoCooldown.offset = 0x23821F;
-        this->_offsets.NoCooldown.enabled = (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90";
-        this->_offsets.NoCooldown.disabled = (BYTE*)"\xF3\x0F\x11\x84\xC3\x24\x6A\x01\x00";
-        this->_offsets.NoCooldown.size = 9;
-        this->_offsets.InfiniteAirDash.offset = 0x47E391;
-        this->_offsets.InfiniteAirDash.enabled = (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90";
-        this->_offsets.InfiniteAirDash.disabled = (BYTE*)"\xC7\x83\x98\x0A\x01\x00\x01\x00\x00\x00";
-        this->_offsets.InfiniteAirDash.size = 10;
-        this->_offsets.WeaponMaterials.offset = 0x5EE5CE;
-        this->_offsets.WeaponMaterials.enabled = (BYTE*)"\x90\x90\x90\x90\x90";
-        this->_offsets.WeaponMaterials.disabled = (BYTE*)"\x41\x3B\xC2\x7C\x31";
-        this->_offsets.WeaponMaterials.size = 5;
-        this->_offsets.PodMaterials.offset = 0x5EE7F0;
-        this->_offsets.PodMaterials.enabled = (BYTE*)"\x90\x90\x90";
-        this->_offsets.PodMaterials.disabled = (BYTE*)"\x83\xFB\xFF";
-        this->_offsets.PodMaterials.size = 3;
-        // TODO this->_offsets.FreeCamera;
-        this->_offsets.InfiniteItemUsage.offset = 0x7C9D82;
-        this->_offsets.InfiniteItemUsage.enabled = (BYTE*)"\x90\x90\x90";
-        this->_offsets.InfiniteItemUsage.disabled = (BYTE*)"\x89\x70\x08";
-        this->_offsets.InfiniteItemUsage.size = 3;
-        break;
-    }
+    // // Cheats
+    // this->_offsets.NoClipX.offset = 0x1354B1;
+    // this->_offsets.NoClipX.enabled = (BYTE*)"\x90\x90\x90\x90";
+    // this->_offsets.NoClipX.disabled = (BYTE*)"\x0F\x29\x42\x50";
+    // this->_offsets.NoClipX.size = 4;
+    // this->_offsets.NoClipY.offset = 0x135758;
+    // this->_offsets.NoClipY.enabled = (BYTE*)"\x90\x90\x90\x90";
+    // this->_offsets.NoClipY.disabled = (BYTE*)"\x0F\x29\x43\x50";
+    // this->_offsets.NoClipY.size = 4;
+    // this->_offsets.InfiniteDoubleJump.offset = 0x1E2D4C;
+    // this->_offsets.InfiniteDoubleJump.enabled = (BYTE*)"\xFF\x0F\x8C";
+    // this->_offsets.InfiniteDoubleJump.disabled = (BYTE*)"\x02\x0f\x8D";
+    // this->_offsets.InfiniteDoubleJump.size = 3;
+    // this->_offsets.NoCooldown.offset = 0x23821F;
+    // this->_offsets.NoCooldown.enabled = (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90";
+    // this->_offsets.NoCooldown.disabled = (BYTE*)"\xF3\x0F\x11\x84\xC3\x24\x6A\x01\x00";
+    // this->_offsets.NoCooldown.size = 9;
+    // this->_offsets.InfiniteAirDash.offset = 0x47E391;
+    // this->_offsets.InfiniteAirDash.enabled = (BYTE*)"\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90";
+    // this->_offsets.InfiniteAirDash.disabled = (BYTE*)"\xC7\x83\x98\x0A\x01\x00\x01\x00\x00\x00";
+    // this->_offsets.InfiniteAirDash.size = 10;
+    // this->_offsets.WeaponMaterials.offset = 0x5EE5CE;
+    // this->_offsets.WeaponMaterials.enabled = (BYTE*)"\x90\x90\x90\x90\x90";
+    // this->_offsets.WeaponMaterials.disabled = (BYTE*)"\x41\x3B\xC2\x7C\x31";
+    // this->_offsets.WeaponMaterials.size = 5;
+    // this->_offsets.PodMaterials.offset = 0x5EE7F0;
+    // this->_offsets.PodMaterials.enabled = (BYTE*)"\x90\x90\x90";
+    // this->_offsets.PodMaterials.disabled = (BYTE*)"\x83\xFB\xFF";
+    // this->_offsets.PodMaterials.size = 3;
+    // // TODO this->_offsets.FreeCamera;
+    // this->_offsets.InfiniteItemUsage.offset = 0x7C9D82;
+    // this->_offsets.InfiniteItemUsage.enabled = (BYTE*)"\x90\x90\x90";
+    // this->_offsets.InfiniteItemUsage.disabled = (BYTE*)"\x89\x70\x08";
+    // this->_offsets.InfiniteItemUsage.size = 3;
 
     this->_hooked = true;
 }
@@ -627,7 +611,7 @@ void NieRHook::start(void)
 void NieRHook::stop(void)
 {
     this->_hooked = false;
-    this->version = 0;
+    // this->version = 0;
     this->_baseAddress = 0;
     this->_entityAddress = 0;
     this->_pID = 0;

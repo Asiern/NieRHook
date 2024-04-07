@@ -61,17 +61,6 @@ int main()
     {
         Sleep(500);
         system("cls");
-        switch (hook.getVersion())
-        {
-        case VER_0_0_1:
-            std::cout << "version 0.0.1" << std::endl;
-            break;
-        case VER_0_0_2:
-            std::cout << "version 0.0.2" << std::endl;
-            break;
-        default:
-            break;
-        }
         if (!hook.isSavefileLoaded())
         {
             std::cout << "Loaded Savefile: NONE" << std::endl;

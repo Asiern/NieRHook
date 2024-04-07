@@ -33,7 +33,7 @@ class NieRHook
     float Zpos;
     int Funds;
     int EXP;
-    int version;
+    // int version;
 
     // Methods
     DWORD _getProcessID(void);
@@ -42,7 +42,7 @@ class NieRHook
     template <typename T> T readMemory(uintptr_t address);
     template <typename T> void writeMemory(uintptr_t address, T value);
     char* readMemoryString(uintptr_t address, int size);
-    void getGameVersion();
+    // void getGameVersion();
 
   public:
     NieRHook();
@@ -51,7 +51,7 @@ class NieRHook
     void stop(void);  // Reset hook
     bool isHooked(void);
     void hookStatus(void);
-    int getVersion(void);
+    // int getVersion(void);
     bool isSavefileLoaded(void);
 
     DWORD getProcessID(void); // Returns process id
