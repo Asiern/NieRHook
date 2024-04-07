@@ -672,8 +672,8 @@ void NieRHook::start(int version)
 
     // Player
     this->_offsets.entity = 0x1020948;
-    this->_offsets.health = 0x858;
-    this->_offsets.maxHealth = 0x85c;
+    this->_offsets.health = 0x10668;
+    this->_offsets.maxHealth = 0x1066C;
     this->_offsets.x = 0x50;
     this->_offsets.y = 0x54;
     this->_offsets.z = 0x58;
